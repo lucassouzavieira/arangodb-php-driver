@@ -35,25 +35,25 @@ abstract class UrlHelper {
 
 
   const LOOKUP_BY_KEYS = '/_api/simple/lookup-by_keys';
-  const URL_ALL = '/_api/simple/all';
-  const URL_ALL_KEYS = '/_api/simple/all';
-  const URL_ANY = '/_api/simple/any';
-  const URL_FULLTEXT = '/_api/simple/fulltext';
-  const URL_REMOVE_BY_KEYS = '/_api/simple/remove-by-keys';
+  const ALL = '/_api/simple/all';
+  const ALL_KEYS = '/_api/simple/all';
+  const ANY = '/_api/simple/any';
+  const FULLTEXT = '/_api/simple/fulltext';
+  const REMOVE_BY_KEYS = '/_api/simple/remove-by-keys';
 
-  const URL_EXAMPLE = '/_api/simple/by-example';
-  const URL_FIRST_EXAMPLE = '/_api/simple/first-example';
-  const URL_UPDATE_BY_EXAMPLE = '/_api/simple/update-by-example';
-  const URL_REMOVE_BY_EXAMPLE = '/_api/simple/remove-by-example';
-  const URL_REPLACE_BY_EXAMPLE = '/_api/simple/replace-by-example';
+  const EXAMPLE = '/_api/simple/by-example';
+  const FIRST_EXAMPLE = '/_api/simple/first-example';
+  const UPDATE_BY_EXAMPLE = '/_api/simple/update-by-example';
+  const REMOVE_BY_EXAMPLE = '/_api/simple/remove-by-example';
+  const REPLACE_BY_EXAMPLE = '/_api/simple/replace-by-example';
 
-  const URL_ADMIN_VERSION = '/_admin/version';
-  const URL_ADMIN_SERVER_ROLE = '/_admin/server/role';
-  const URL_ADMIN_TIME = '/_admin/time';
-  const URL_ADMIN_LOG = '/_admin/log';
-  const URL_ADMIN_ROUTING_RELOAD = '/_admin/routing/reload';
-  const URL_ADMIN_STATISTICS = '/_admin/statistics';
-  const URL_ADMIN_STATISTICS_DESCRIPTION = '/_admin/statistics-description';
+  const ADMIN_VERSION = '/_admin/version';
+  const ADMIN_SERVER_ROLE = '/_admin/server/role';
+  const ADMIN_TIME = '/_admin/time';
+  const ADMIN_LOG = '/_admin/log';
+  const ADMIN_ROUTING_RELOAD = '/_admin/routing/reload';
+  const ADMIN_STATISTICS = '/_admin/statistics';
+  const ADMIN_STATISTICS_DESCRIPTION = '/_admin/statistics-description';
   const FOXX_INSTALL = '/_admin/foxx/install';
   const FOXX_UNINSTALL = '/_admin/foxx/uninstall';
 }
