@@ -9,7 +9,7 @@ use ArangoDB\Exception\ClientException;
  * @package ArangoDB/Validation
  * @class Validation
  * @author Lucas S. Vieira
-*/
+ */
 abstract class Validation {
 
   /**

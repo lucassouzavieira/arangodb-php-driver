@@ -2,11 +2,11 @@
 namespace ArangoDB\Http;
 
 /**
-* URL Helper to ArangoDB HTTP Interface
-* @package ArangoDB/Http
-* @class UrlHelper
-* @author Lucas S. Vieira
-*/
+ * URL Helper to ArangoDB HTTP Interface
+ * @package ArangoDB/Http
+ * @class UrlHelper
+ * @author Lucas S. Vieira
+ */
 abstract class UrlHelper {
   const DOCUMENT = '/_api/document';
   const EDGE = '/_api/document';
