@@ -13,10 +13,10 @@ use ArangoDB\Exception\ClientException;
 class UpdatePolicy implements Policy {
 
   /* Last update will win in case of conflicting versions*/
-  const LAST = 'last';
+  const LAST = "last";
 
   /* An error will be returned in case of conflicting versions */
-  const ERROR = 'error';
+  const ERROR = "error";
 
   /**
    * Validate a supplied policy value
