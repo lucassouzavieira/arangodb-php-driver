@@ -12,7 +12,7 @@ use ArangoDB\Exception\ClientException;
 * @class Collection
 * @author Lucas S. Vieira
 */
-class Collection {
+class Collection implements \JsonSerializable {
 
   /**
   * Collection id (might be NULL for new collections)
@@ -167,14 +167,35 @@ class Collection {
     ];
 
     if(!is_null(this->numberOfShards)){
-      // let attributes[self::ENTRY_NUMBER_OF_SHARDS : this->numberOfShards ];
+      array numberOfShards;
+
+      let numberOfShards = [
+        self::ENTRY_NUMBER_OF_SHARDS : this->numberOfShards
+      ];
+
+      let attributes[] = numberOfShards;
     }
 
     if(is_array(this->shardKeys)){
-      // let attributes[self::ENTRY_SHARD_KEYS : this->shardKeys ];
+      array shardKeys;
+
+      let shardKeys = [
+        self::ENTRY_SHARD_KEYS : this->shardKeys
+      ];
+
+      let attributes[] = shardKeys;
     }
 
     return attributes;
+  }
+
+  /**
+   * Serialize instance as JSON document
+   *
+   * @return array
+   */
+  public function jsonSerialize() {
+    return this->getAll();
   }
 
   /**
