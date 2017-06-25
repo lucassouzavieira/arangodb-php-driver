@@ -199,6 +199,25 @@ class Collection implements \JsonSerializable {
   }
 
   /**
+   * ID setter
+   *
+   * @param int id
+   * @return void
+   */
+  public function setId(int id) -> void {
+    let this->id = id;
+  }
+
+  /**
+   * ID getter
+   *
+   * @return int | null
+   */
+  public function getId() {
+    return this->id;
+  }
+
+  /**
    * Set the collection name
    *
    * @throws ClientException if name has lenght equals 0
@@ -213,4 +232,185 @@ class Collection implements \JsonSerializable {
 
     throw new ClientException("Invalid string for a collection name");
   }
+
+  /**
+   * Name getter
+   *
+   * @return string | null
+   */
+  public function getName() {
+    return this->name;
+  }
+
+  /**
+   * Type setter
+   *
+   * @param int tyoe
+   * @return void
+   */
+  public function setType(int type) -> void {
+    let this->type = type;
+  }
+
+  /**
+   * Type getter
+   *
+   * @return int | null
+   */
+  public function getType() {
+    return this->type;
+  }
+
+  /**
+   * waitForSync setter
+   *
+   * @param boolean waitForSync
+   * @return void
+   */
+  public function setWaitForSync(boolean waitForSync) -> void {
+    let this->waitForSync = waitForSync;
+  }
+
+  /**
+   * waitForSync getter
+   *
+   * @return boolean | null
+   */
+  public function getWaitForSync() {
+    return this->waitForSync;
+  }
+
+  /**
+   * journalSize setter
+   *
+   * @param int journalSize
+   * @return void
+   */
+  public function setJournalSize(int journalSize) -> void {
+    let this->journalSize = journalSize;
+  }
+
+  /**
+   * journalSize getter
+   *
+   * @return int | null
+   */
+  public function getJournalSize() {
+    return this->journalSize;
+  }
+
+  /**
+   * isSystem setter
+   *
+   * @param boolean isSystem
+   * @return void
+   */
+  public function setIsSystem(boolean isSystem) -> void {
+    let this->isSystem = isSystem;
+  }
+
+  /**
+   * isSystem getter
+   *
+   * @return boolean | null
+   */
+  public function getIsSystem() {
+    return this->isSystem;
+  }
+
+  /**
+   * isVolatile setter
+   *
+   * @param boolean isVolatile
+   * @return void
+   */
+  public function setIsVolatile(boolean isVolatile) -> void {
+    let this->isVolatile = isVolatile;
+  }
+
+  /**
+   * isVolatile getter
+   *
+   * @return boolean | null
+   */
+  public function getIsVolatile() {
+    return this->isVolatile;
+  }
+
+  /**
+   * numberOfShards setter
+   *
+   * @param int numberOfShards
+   * @return void
+   */
+  public function setNumberOfShards(int numberOfShards) -> void {
+    let this->numberOfShards = numberOfShards;
+  }
+
+  /**
+   * numberOfShards getter
+   *
+   * @return int | null
+   */
+  public function getNumberOfShards() {
+    return this->numberOfShards;
+  }
+
+  /**
+   * shardKeys setter
+   *
+   * @param array shardKeys
+   * @return void
+   */
+  public function setShardKeys(array shardKeys) -> void {
+    let this->shardKeys = shardKeys;
+  }
+
+  /**
+   * shardKeys getter
+   *
+   * @return array | null
+   */
+  public function getShardKeys() {
+    return this->shardKeys;
+  }
+
+  /**
+   * status setter
+   *
+   * @param int shardKeys
+   * @return void
+   */
+  public function setStatus(int status) -> void {
+    let this->status = status;
+  }
+
+  /**
+   * status getter
+   *
+   * @return int | null
+   */
+  public function getStatus() {
+    return this->status;
+  }
+
+  /**
+   * keyOptions setter
+   *
+   * @param array keyOptions
+   * @return void
+   */
+  public function setKeyOptions(array keyOptions) -> void {
+    let this->keyOptions = keyOptions;
+  }
+
+  /**
+   * keyOptions getter
+   *
+   * @return array | null
+   */
+  public function getKeyOptions() {
+    return this->keyOptions;
+  }
+
 }
