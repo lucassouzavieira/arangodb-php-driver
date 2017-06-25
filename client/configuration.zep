@@ -1,6 +1,8 @@
 
 namespace ArangoDB\Client;
 
+use ArangoDB\Policies\UpdatePolicy;
+
 /**
  * Default client configurations
  *
@@ -22,12 +24,9 @@ abstract class Configuration {
   const ALLOW_SELF_SIGNED = true;
   const CIPHERS = null;
 
-  /**
-   * TODO Add policies default values
-   */
-  const UPDATE_POLICY = false;
-  const REPLACE_POLICY = false;
-  const DELETE_POLICY = false;
+  const UPDATE_POLICY = UpdatePolicy::ERROR;
+  const REPLACE_POLICY = UpdatePolicy::ERROR;
+  const DELETE_POLICY = UpdatePolicy::ERROR;
 
   const CHECK_UTF8_CONFORM = false;
 }
