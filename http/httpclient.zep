@@ -3,6 +3,7 @@ namespace ArangoDB\Http;
 use ArangoDB\Connection\Options;
 use ArangoDB\Connection\Endpoint;
 use ArangoDB\Exception\ConnectException;
+use ArangoDB\Exception\ClientException;
 
 /**
  * HttpClient to ArangoDB PHP Driver
@@ -10,10 +11,11 @@ use ArangoDB\Exception\ConnectException;
  * TODO A lot of things
  *
  * @package ArangoDB/Http
+ * @abstract
  * @class HttpClient
  * @author Lucas S. Vieira
  */
-class HttpClient {
+abstract class HttpClient {
 
   /**
    * HTTP method constants
@@ -54,6 +56,81 @@ class HttpClient {
    * HTTP Header for making an operation asynchronous
    */
   const ASYNC_HEADER = "X-Arango-Async";
+
+  /**
+   * Validate an HTTP method request name
+   *
+   * @throws \ArangoDB\Exception\ClientException
+   * @param string method - method name
+   * @return boolean - always true - throw an exception if method is not valid
+   */
+  public static function validateMethod(string method) {
+    array methods;
+
+    let methods = [
+      self::GET, self::PUT, self::POST, self::DELETE, self::HEAD, self::PATCH
+    ];
+
+    if(in_array(method, methods)){
+      return true;
+    }
+
+    throw new ClientException("Invalid request method:  " . method);
+  }
+
+  /**
+   * Splits an http message into its header and body
+   *
+   * @param string httpMessage  HTTP message
+   * @return array
+   */
+  public static function parseHttpMessage(string httpMessage){
+    return explode(self::SEPARATOR, httpMessage, 2);
+  }
+
+  /**
+   * Process a string of HTTP headers into an array of header => values
+   *
+   * @param string headers  HTTP header
+   * @return array
+   */
+  public static function parseHttpHeaders(string headers){
+    var httpCode;
+    var result;
+    array processed;
+
+    var lineNumber, line;
+
+    for lineNumber, line in explode(self::EOL, headers) {
+      var key, value;
+      var elements;
+
+      /* First line is special */
+      if(lineNumber == 0){
+        var matches;
+        if(preg_match("/^HTTP\/\d+\.\d+\s+(\d+)/", line, matches)){
+          let httpCode = (int) matches[1];
+        }
+
+        let result = line;
+        continue;
+      }
+
+      /* Other lines contain key:value headers */
+      if(strpos(line, ": ") !== false){
+        let elements = explode(": ", line, 2);
+      } else {
+        let elements = explode(":", line, 2);
+      }
+
+      let key = elements[0];
+      let value = elements[1];
+
+      let processed[strtolower(key)] = value;
+    }
+
+    return [httpCode, result, processed];
+  }
 
   /**
    * Create a one-time HTTP connection by opening a socket to the server

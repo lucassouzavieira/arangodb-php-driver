@@ -8,6 +8,7 @@ use ArangoDB\Exception\ClientException;
  *
  * @package ArangoDB/Validation
  * @class Validation
+ * @abstract
  * @author Lucas S. Vieira
  */
 abstract class Validation {
@@ -17,6 +18,7 @@ abstract class Validation {
    * Arrays also are allowed if they contain only one of these types.
    *
    * @throw \ArangoDB\Exception\ClientException if value is not valid
+   * @param mixed value - Value to validate
    * @return void
    */
   public static function validateValue(value) -> void {
