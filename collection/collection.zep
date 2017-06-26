@@ -413,4 +413,114 @@ class Collection implements \JsonSerializable {
     return this->keyOptions;
   }
 
+  /**
+   * Get default Collection type
+   *
+   * @return string
+   */
+  public function getDefaultType(){
+    return self::TYPE_DOCUMENT;
+  }
+
+  /**
+   * Factory method to construct a new Collection
+   *
+   * @throws ClientException
+   * @param array values - Initial values for collection
+   * @return Collection
+   */
+  public static function createFromArray(array values){
+    if(self::validateArray(values)){
+        var collection;
+        let collection = new Collection(values["name"]);
+        collection->setId(values["id"]);
+        collection->setType(values["type"]);
+        collection->setWaitForSync(values["waitForSync"]);
+        collection->setJournalSize(values["journalSize"]);
+        collection->setIsSystem(values["isSystem"]);
+        collection->setIsVolatile(values["isVolatile"]);
+        collection->setNumberOfShards(values["numberOfShards"]);
+        collection->setShardKeys(values["shardKeys"]);
+        collection->setStatus(values["status"]);
+        collection->setKeyOptions(values["keyOptions"]);
+
+        return collection;
+    }
+  }
+
+  /**
+   * Validate an array to create a new Collection
+   *
+   * TODO Review mandatory attributes
+   * @throws ClientException
+   * @param array values - array to validate
+   * @return boolean
+   */
+  private function validateArray(array values){
+    var key;
+
+    /* Check array keys*/
+    for key, _ in values{
+      if(!is_string(key)){
+        throw new ClientException("Invalid collection attribute type");
+      }
+    }
+
+    /* The array must contain 'name' key and his value must be a string */
+    if(!array_key_exists("id", values) || !is_int(values["id"])){
+      throw new ClientException("Invalid type or missing id attribute");
+    }
+
+    /* The array must contain 'name' key and his value must be a string */
+    if(!array_key_exists("name", values) || !is_string(values["name"])){
+      throw new ClientException("Invalid type or missing name attribute");
+    }
+
+    /* The array must contain 'type' key and his value must be a int */
+    if(!array_key_exists("type", values) || !is_int(values["type"])){
+      throw new ClientException("Invalid type or missing type attribute");
+    }
+
+    /* The array must contain 'waitForSync' key and his value must be a boolean */
+    if(!array_key_exists("waitForSync", values) || !is_bool(values["waitForSync"])){
+      throw new ClientException("Invalid type or missing waitForSync attribute");
+    }
+
+    /* The array must contain 'journalSize' key and his value must be a int */
+    if(!array_key_exists("journalSize", values) || !is_int(values["journalSize"])){
+      throw new ClientException("Invalid type or missing journalSize attribute");
+    }
+
+    /* The array must contain 'isSystem' key and his value must be a boolean */
+    if(!array_key_exists("isSystem", values) || !is_bool(values["isSystem"])){
+      throw new ClientException("Invalid type or missing isSystem attribute");
+    }
+
+    /* The array must contain 'isVolatile' key and his value must be a boolean */
+    if(!array_key_exists("isVolatile", values) || !is_bool(values["isVolatile"])){
+      throw new ClientException("Invalid type or missing isVolatile attribute");
+    }
+
+    /* The array must contain 'numberOfShards' key and his value must be a int */
+    if(!array_key_exists("numberOfShards", values) || !is_int(values["numberOfShards"])){
+      throw new ClientException("Invalid type or missing numberOfShards attribute");
+    }
+
+    /* The array must contain 'shardKeys' key and his value must be a array */
+    if(!array_key_exists("shardKeys", values) || !is_array(values["shardKeys"])){
+      throw new ClientException("Invalid type or missing shardKeys attribute");
+    }
+
+    /* The array must contain 'status' key and his value must be a int */
+    if(!array_key_exists("status", values) || !is_int(values["status"])){
+      throw new ClientException("Invalid type or missing status attribute");
+    }
+
+    /* The array must contain 'keyOptions' key and his value must be a array */
+    if(!array_key_exists("keyOptions", values) || !is_array(values["keyOptions"])){
+      throw new ClientException("Invalid type or missing keyOptions attribute");
+    }
+
+    return true;
+  }
 }
