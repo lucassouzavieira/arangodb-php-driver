@@ -8,8 +8,6 @@ use ArangoDB\Exception\ClientException;
 /**
  * HttpClient to ArangoDB PHP Driver
  *
- * TODO A lot of things
- *
  * @package ArangoDB/Http
  * @abstract
  * @class HttpClient
@@ -227,5 +225,79 @@ abstract class HttpClient {
        return request;
    }
 
+   /**
+    * Create a request string (header and body)
+    *
+    * @param resource socket - Connection socket
+    * @param string request - HTTP request as a string
+    * @param string method - HTTP method used
+    *
+    * @throws \ArangoDB\Exception\ClientException
+    * @return string - HTTP response string
+    */
+   public static function transfer(socket, string request, string method) -> string {
+     var contentLenght = null, expectedLenght = null;
+     var totalRead = 0, contentLenghtPosition = 0;
+     var result = "", first = true;
+     var read;
+
+     if(!is_resource(socket)){
+       throw new ClientException("Invalid socket used");
+     }
+
+     fwrite(socket, request);
+     fflush(socket);
+
+     while(first || !feof(socket)){
+       let read = fread(socket, self::CHUNK_SIZE);
+
+       if(read == false || read == ""){
+         break;
+       }
+
+       let totalRead = totalRead + strlen(read);
+
+       if(first){
+         let result = read;
+         let first = false;
+       } else {
+         let result = result . read;
+       }
+
+       if(contentLenght == null){
+         var position;
+
+         // 12 = minimum offset (i.e. strlen("HTTP/1.1 xxx") -
+         // after that we could see "content-length:"
+         let position = stripos(result, "content-lenght", 12);
+
+         if(position != false){
+           let contentLenght = (int) substr(result, position + strlen("content-length: "), 10);
+           let contentLenghtPosition = position + 17; // 16 + 1
+
+           if(method == "HEAD"){
+             let contentLenght = 0;
+           }
+         }
+       }
+
+       if(contentLenght != null && expectedLenght == null){
+         var bodyStart;
+
+         let bodyStart = strpos(result, "\r\n\r\n", contentLenghtPosition);
+
+         if(bodyStart != false){
+           let bodyStart = bodyStart + strlen("\r\n\r\n");
+           let expectedLenght = bodyStart + contentLenght;
+         }
+
+         if(expectedLenght != null && totalRead >= expectedLenght){
+           break;
+         }
+       }
+     }
+
+     return result;
+   }
 
 }
