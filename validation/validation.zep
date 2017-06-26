@@ -16,7 +16,7 @@ abstract class Validation {
    * String, integer, float, boolean and null values are allowed.
    * Arrays also are allowed if they contain only one of these types.
    *
-   * @throw ClientException if value is not valid
+   * @throw \ArangoDB\Exception\ClientException if value is not valid
    * @return void
    */
   public static function validateValue(value) -> void {

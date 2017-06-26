@@ -4,14 +4,14 @@ namespace ArangoDB\Collection;
 use ArangoDB\Exception\ClientException;
 
 /**
-* Collection class
-*
-* Represents a Collection in ArangoDB Database
-*
-* @package ArangoDB/Collection
-* @class Collection
-* @author Lucas S. Vieira
-*/
+ * Collection class
+ *
+ * Represents a Collection in ArangoDB Database
+ *
+ * @package ArangoDB/Collection
+ * @class Collection
+ * @author Lucas S. Vieira
+ */
 class Collection implements \JsonSerializable {
 
   /**
@@ -121,7 +121,7 @@ class Collection implements \JsonSerializable {
   /**
    * Construct a new collection representation
    *
-   * @throws ClientException if name has lenght equals 0
+   * @throws \ArangoDB\Exception\ClientException if name has lenght equals 0
    * @param string name
    * @return void
    */
@@ -145,6 +145,17 @@ class Collection implements \JsonSerializable {
     let this->isVolatile = null;
     let this->numberOfShards = null;
     let this->shardKeys = null;
+  }
+
+  /**
+   * Get an string representation of collection
+   *
+   * @magic
+   * @return string
+   */
+  public function __toString()
+  {
+    return json_encode(this->getAll(), JSON_UNESCAPED_UNICODE);
   }
 
   /**
@@ -220,7 +231,7 @@ class Collection implements \JsonSerializable {
   /**
    * Set the collection name
    *
-   * @throws ClientException if name has lenght equals 0
+   * @throws \ArangoDB\Exception\ClientException if name has lenght equals 0
    * @param string name
    * @return void
    */
@@ -425,7 +436,7 @@ class Collection implements \JsonSerializable {
   /**
    * Factory method to construct a new Collection
    *
-   * @throws ClientException
+   * @throws \ArangoDB\Exception\ClientException
    * @param array values - Initial values for collection
    * @return Collection
    */
@@ -452,7 +463,7 @@ class Collection implements \JsonSerializable {
    * Validate an array to create a new Collection
    *
    * TODO Review mandatory attributes
-   * @throws ClientException
+   * @throws \ArangoDB\Exception\ClientException
    * @param array values - array to validate
    * @return boolean
    */

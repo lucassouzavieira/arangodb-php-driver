@@ -20,7 +20,7 @@ class UpdatePolicy implements Policy {
 
   /**
    * Validate a supplied policy value
-   * @throws ClientException
+   * @throws \ArangoDB\Exception\ClientException
    * @param string value - update policy value
    * @return void
    */
