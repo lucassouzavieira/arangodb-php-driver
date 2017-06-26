@@ -5,6 +5,7 @@ use ArangoDB\Connection\Options;
 use ArangoDB\Connection\Encoding;
 use ArangoDB\Http\HttpClient;
 use ArangoDB\Exception\ClientException;
+use ArangoDB\Exception\ConnectException;
 
 /**
  * Connection class
@@ -186,9 +187,9 @@ class Connection {
   /**
    * Get the options set for the connection
    *
-   * @return \ArangoDB\Connection\Options
+   * @return \ArangoDB\Connection\Options | null
    */
-  public function getOptions(){
+  public function getOptions() -> <Options> | null {
     return this->options;
   }
 
@@ -200,7 +201,7 @@ class Connection {
    * @param string name - name of database
    * @return void
    */
-  public function setDatabase(string database){
+  public function setDatabase(string database) -> void {
     let this->options[Options::DATABASE] = database;
     let this->database = database;
     this->updateHttpHeader();
@@ -211,7 +212,7 @@ class Connection {
    *
    * @return string
    */
-  public function getDatabase(){
+  public function getDatabase() -> string {
     return this->database;
   }
 
@@ -220,7 +221,7 @@ class Connection {
    *
    * @return void
    */
-   private function updateHttpHeader() -> void {
+  private function updateHttpHeader() -> void {
      var endpoint;
 
      let this->httpHeader = HttpClient::EOL;
@@ -261,5 +262,44 @@ class Connection {
      if(this->database != ""){
        let this->baseUrl = "/_db/" . urlencode(this->database);
      }
+   }
+
+   /**
+    * Get a connection handle
+    *
+    * If keep-alive connections are used, the handle will be stored and re-used
+    *
+    * @throws \ArangoDB\Exception\ConnectException | \ArangoDB\Exception\ClientException
+    * @return resource - connection handler
+    */
+   public function getHandle(){
+     var handle;
+
+     if(this->useKeepAlive && this->handle && is_resource(this->handle)){
+       /* Keep-alive connection was created already*/
+
+       let handle = this->handle;
+
+       /* Check if connection is still valid */
+       if(!feof(handle)){
+         return handle;
+       }
+
+       /* Close handle*/
+       fclose(this->handle);
+       let this->handle = 0;
+
+       if(!this->options[Options::RECONNECT]){
+         throw new ClientException("Server has closed connection already");
+       }
+     }
+
+     let handle = HttpClient::createConnection(this->options);
+
+     if(this->useKeepAlive && is_resource(handle)){
+       let this->handle = handle;
+     }
+
+     return handle;
    }
 }
