@@ -471,7 +471,7 @@ class Collection implements \JsonSerializable {
     var key;
 
     /* Check array keys*/
-    for key, _ in values{
+    for key, _ in values {
       if(!is_string(key)){
         throw new ClientException("Invalid collection attribute type");
       }

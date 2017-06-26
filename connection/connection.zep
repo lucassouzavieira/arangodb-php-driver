@@ -2,6 +2,7 @@
 namespace ArangoDB\Connection;
 
 use ArangoDB\Connection\Options;
+use ArangoDB\Connection\Encoding;
 use ArangoDB\Exception\ClientException;
 
 /**
@@ -212,4 +213,6 @@ class Connection {
   public function getDatabase(){
     return this->database;
   }
+
+
 }
