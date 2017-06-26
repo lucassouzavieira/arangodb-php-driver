@@ -176,4 +176,56 @@ abstract class HttpClient {
 
      return socketResource;
    }
+
+   /**
+    * Create a request string (header and body)
+    *
+    * @param Options options - Connection options
+    * @param string header - Pre-assembled header string for connection
+    * @param string method - HTTP method
+    * @param string url - HTTP url
+    * @param string body - Optional body to post
+    * @param array customHeaders - Any array containing header elements
+    *
+    * @throws \ArangoDB\Exception\ClientException
+    * @return string - Assembled HTTP request string
+    */
+   public static function buildRequest(<Options> options,
+     string header,
+     string method,
+     string url,
+     string body,
+     array customHeaders) -> string {
+       var lenght, contentType, customHeader, request;
+
+       let lenght = strlen(body);
+
+       let contentType = "Content-Type: multipart/form-data; boundary=" . self::MIME_BOUNDARY . self::EOL;
+
+       if(!options[Options::BATCH]){
+         let contentType = "";
+
+         if(lenght > 0 && options[Options::BATCHPART] == false){
+           let contentType = "Content-Type: application/json" . self::EOL;
+         }
+       }
+
+       let customHeader = "";
+
+       var headerKey, headerValue;
+
+       for headerKey, headerValue in customHeaders {
+         let customHeader = customHeader . headerKey . ": " . headerValue . self::EOL;
+       }
+
+       // Assemble the request
+       let request = sprintf("%s %s %s", method, url, self::PROTOCOL);
+       let request = request . header . customHeader . contentType;
+       let request = request . sprintf("Content-Length: %s", lenght) . self::EOL . self::EOL;
+       let request = request . body;
+
+       return request;
+   }
+
+
 }
