@@ -3,6 +3,7 @@ namespace ArangoDB\Connection;
 
 use ArangoDB\Connection\Options;
 use ArangoDB\Connection\Encoding;
+use ArangoDB\Http\HttpClient;
 use ArangoDB\Exception\ClientException;
 
 /**
@@ -108,7 +109,7 @@ class Connection {
     let this->options = new Options(options);
     let this->useKeepAlive = (this->options[Options::CONNECTION] == "Keep-alive");
     this->setDatabase(this->options[Options::DATABASE]);
-    // this->updateHttpHeader();
+    this->updateHttpHeader();
   }
 
   /**
@@ -168,7 +169,7 @@ class Connection {
       this->setDatabase(value);
     }
 
-    // this->updateHttpHeader();
+    this->updateHttpHeader();
   }
 
   /**
@@ -202,7 +203,7 @@ class Connection {
   public function setDatabase(string database){
     let this->options[Options::DATABASE] = database;
     let this->database = database;
-    //this->updateHttpHeader();
+    this->updateHttpHeader();
   }
 
   /**
@@ -214,5 +215,51 @@ class Connection {
     return this->database;
   }
 
+  /**
+   * Recalculate the static HTTP header string used for all HTTP requests in this connection
+   *
+   * @return void
+   */
+   private function updateHttpHeader() -> void {
+     var endpoint;
 
+     let this->httpHeader = HttpClient::EOL;
+     let endpoint = this->options[Options::ENDPOINT];
+
+     if(Endpoint::getType(endpoint) != Endpoint::TYPE_UNIX){
+       let this->httpHeader = this->httpHeader . sprintf("Host: %s%s", Endpoint::getHost(endpoint), HttpClient::EOL);
+     }
+
+     if(isset(this->options[Options::AUTH_TYPE]) && isset(this->options[Options::AUTH_USER])){
+       /* Add autorization header */
+       var authorization;
+
+       let authorization = base64_encode(
+         this->options[Options::AUTH_USER] . ":",
+         this->options[Options::AUTH_PASSWD]
+       );
+
+       let this->httpHeader = this->httpHeader . sprintf(
+         "Authorization: %s %s%s",
+         this->options[Options::AUTH_TYPE],
+         authorization,
+         HttpClient::EOL
+       );
+     }
+
+     if(isset(this->options[Options::CONNECTION])){
+       /* Add connection header */
+       let this->httpHeader = this->httpHeader . sprintf(
+         "Connection: %s%s",
+         this->options[Options::CONNECTION],
+         HttpClient::EOL
+       );
+     }
+
+     let this->baseUrl = "/_db/_system";
+
+     if(this->database != ""){
+       let this->baseUrl = "/_db/" . urlencode(this->database);
+     }
+   }
 }

@@ -226,7 +226,9 @@ abstract class HttpClient {
    }
 
    /**
-    * Create a request string (header and body)
+    * Execute an HTTP request on an opened socket
+    *
+    * It is the caller's responsibility to close the socket
     *
     * @param resource socket - Connection socket
     * @param string request - HTTP request as a string
@@ -299,5 +301,4 @@ abstract class HttpClient {
 
      return result;
    }
-
 }

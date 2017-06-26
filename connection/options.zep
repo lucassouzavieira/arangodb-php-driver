@@ -133,7 +133,7 @@ class Options implements \ArrayAccess {
   /**
    * Authentication password
    */
-  const  AUTH_PASSWD = "AuthPasswd";
+  const AUTH_PASSWD = "AuthPasswd";
 
   /**
    * Authentication type
