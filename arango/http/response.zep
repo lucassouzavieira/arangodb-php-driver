@@ -8,5 +8,4 @@ namespace Arango\Http;
  * @author Lucas S. Vieira
  */
 class Response {
-
 }
