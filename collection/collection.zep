@@ -1,14 +1,14 @@
 
-namespace ArangoDB\Collection;
+namespace Arango\Collection;
 
-use ArangoDB\Exception\ClientException;
+use Arango\Exception\ClientException;
 
 /**
  * Collection class
  *
- * Represents a Collection in ArangoDB Database
+ * Represents a Collection in Arango Database
  *
- * @package ArangoDB/Collection
+ * @package Arango/Collection
  * @class Collection
  * @author Lucas S. Vieira
  */
@@ -121,7 +121,7 @@ class Collection implements \JsonSerializable {
   /**
    * Construct a new collection representation
    *
-   * @throws \ArangoDB\Exception\ClientException if name has lenght equals 0
+   * @throws \Arango\Exception\ClientException if name has lenght equals 0
    * @param string name
    * @return void
    */
@@ -231,7 +231,7 @@ class Collection implements \JsonSerializable {
   /**
    * Set the collection name
    *
-   * @throws \ArangoDB\Exception\ClientException if name has lenght equals 0
+   * @throws \Arango\Exception\ClientException if name has lenght equals 0
    * @param string name
    * @return void
    */
@@ -436,7 +436,7 @@ class Collection implements \JsonSerializable {
   /**
    * Factory method to construct a new Collection
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param array values - Initial values for collection
    * @return Collection
    */
@@ -463,7 +463,7 @@ class Collection implements \JsonSerializable {
    * Validate an array to create a new Collection
    *
    * TODO Review mandatory attributes
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param array values - array to validate
    * @return boolean
    */

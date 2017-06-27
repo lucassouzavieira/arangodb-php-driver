@@ -1,7 +1,7 @@
-namespace ArangoDB\Connection;
+namespace Arango\Connection;
 
-use ArangoDB\Exception\ClientException;
-use ArangoDB\Connection\Connection;
+use Arango\Exception\ClientException;
+use Arango\Connection\Connection;
 
 /**
  * Endpoint class
@@ -13,9 +13,9 @@ use ArangoDB\Connection\Connection;
  * unix://socket for UNIX sockets (provided the server supports this)
  * ssl://host:port for SSL connections (provided the server supports this)
  *
- * Note: SSL support is added in ArangoDB server 1.1
+ * Note: SSL support is added in Arango server 1.1
  *
- * @package ArangoDB/Connection
+ * @package Arango/Connection
  * @class Options
  * @author Lucas S. Vieira
  */
@@ -69,7 +69,7 @@ class Endpoint {
   /**
    * Create a new endpoint
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param string value - endpoint specification
    */
   public function __construct(string value){
@@ -153,8 +153,8 @@ class Endpoint {
    * This will list the endpoints that are configured on the server
    *
    * TODO implements
-   * @throws \ArangoDB\Exception\ClientException
-   * @link https://docs.arangodb.com/devel/Manual/Administration/Configuration/Endpoint.html
+   * @throws \Arango\Exception\ClientException
+   * @link https://docs.Arango.com/devel/Manual/Administration/Configuration/Endpoint.html
    * @param Connection connection - the connection to be used
    * @return array
    */

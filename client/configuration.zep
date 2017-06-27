@@ -1,12 +1,12 @@
 
-namespace ArangoDB\Client;
+namespace Arango\Client;
 
-use ArangoDB\Policies\UpdatePolicy;
+use Arango\Policies\UpdatePolicy;
 
 /**
  * Default client configurations
  *
- * @package ArangoDB/Client
+ * @package Arango/Client
  * @abstract
  * @class Configuration
  * @author Lucas S. Vieira

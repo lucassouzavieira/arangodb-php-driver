@@ -1,13 +1,13 @@
 
-namespace ArangoDB\Database;
+namespace Arango\Database;
 
 /**
  * Database class
  *
- * Manage ArangoDB databases through ArangoDB's Database API
+ * Manage Arango databases through Arango's Database API
  *
- * @link https://docs.arangodb.com/3.1/HTTP/Database/
- * @package ArangoDB\Database
+ * @link https://docs.Arango.com/3.1/HTTP/Database/
+ * @package Arango\Database
  * @class Database
  * @author Lucas S. Vieira
  */

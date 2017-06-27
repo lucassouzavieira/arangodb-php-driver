@@ -1,9 +1,9 @@
 
-namespace ArangoDB\Http;
+namespace Arango\Http;
 
 /**
- * URL Helper to ArangoDB HTTP Interface
- * @package ArangoDB/Http
+ * URL Helper to Arango HTTP Interface
+ * @package Arango/Http
  * @class UrlHelper
  * @author Lucas S. Vieira
  */

@@ -1,12 +1,12 @@
 
-namespace ArangoDB\Validation;
+namespace Arango\Validation;
 
-use ArangoDB\Exception\ClientException;
+use Arango\Exception\ClientException;
 
 /**
  * Validation class
  *
- * @package ArangoDB/Validation
+ * @package Arango/Validation
  * @class Validation
  * @abstract
  * @author Lucas S. Vieira
@@ -17,7 +17,7 @@ abstract class Validation {
    * String, integer, float, boolean and null values are allowed.
    * Arrays also are allowed if they contain only one of these types.
    *
-   * @throw \ArangoDB\Exception\ClientException if value is not valid
+   * @throw \Arango\Exception\ClientException if value is not valid
    * @param mixed value - Value to validate
    * @return void
    */

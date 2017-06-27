@@ -1,12 +1,12 @@
 
-namespace ArangoDB\Policies;
+namespace Arango\Policies;
 
-use ArangoDB\Exception\ClientException;
+use Arango\Exception\ClientException;
 
 /**
  * UpdatePolicy class
  *
- * @package ArangoDB/Policies
+ * @package Arango/Policies
  * @class UpdatePolicy
  * @author Lucas S. Vieira
  */
@@ -21,7 +21,7 @@ class UpdatePolicy implements Policy {
   /**
    * Validate a supplied policy value
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param string value - update policy value
    * @return void
    */

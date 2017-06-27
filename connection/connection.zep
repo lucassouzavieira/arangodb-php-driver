@@ -1,16 +1,16 @@
 
-namespace ArangoDB\Connection;
+namespace Arango\Connection;
 
-use ArangoDB\Connection\Options;
-use ArangoDB\Connection\Encoding;
-use ArangoDB\Http\HttpClient;
-use ArangoDB\Exception\ClientException;
-use ArangoDB\Exception\ConnectException;
+use Arango\Connection\Options;
+use Arango\Connection\Encoding;
+use Arango\Http\Client;
+use Arango\Exception\ClientException;
+use Arango\Exception\ConnectException;
 
 /**
  * Connection class
  *
- * Provides access to ArangoDB server
+ * Provides access to Arango server
  *
  * As all access is done using HTTP, we do not need to establish a
  * persistent connection and keep its state.
@@ -18,7 +18,7 @@ use ArangoDB\Exception\ConnectException;
  * Instead, connections are established on the fly for each request
  * and are destroyed afterwards.
  *
- * @package ArangoDB\Connection
+ * @package Arango\Connection
  * @class Connection
  * @author Lucas S. Vieira
  */
@@ -27,7 +27,7 @@ class Connection {
   /**
    * Connection options
    *
-   * @var \ArangoDB\Connection\Options
+   * @var \Arango\Connection\Options
    */
   private options;
 
@@ -127,7 +127,7 @@ class Connection {
   /**
    * Validate an option
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param string name - name of options
    * @param value
    * @return boolean
@@ -148,7 +148,7 @@ class Connection {
   /**
    * Set an option for the connection
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param string name - name of options
    * @param value
    * @return void
@@ -176,7 +176,7 @@ class Connection {
   /**
    * Get an option set for the connection
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param string name - name of options
    * @return mixed
    */
@@ -187,7 +187,7 @@ class Connection {
   /**
    * Get the options set for the connection
    *
-   * @return \ArangoDB\Connection\Options | null
+   * @return \Arango\Connection\Options | null
    */
   public function getOptions() -> <Options> | null {
     return this->options;
@@ -224,11 +224,11 @@ class Connection {
   private function updateHttpHeader() -> void {
      var endpoint;
 
-     let this->httpHeader = HttpClient::EOL;
+     let this->httpHeader = Client::EOL;
      let endpoint = this->options[Options::ENDPOINT];
 
      if(Endpoint::getType(endpoint) != Endpoint::TYPE_UNIX){
-       let this->httpHeader = this->httpHeader . sprintf("Host: %s%s", Endpoint::getHost(endpoint), HttpClient::EOL);
+       let this->httpHeader = this->httpHeader . sprintf("Host: %s%s", Endpoint::getHost(endpoint), Client::EOL);
      }
 
      if(isset(this->options[Options::AUTH_TYPE]) && isset(this->options[Options::AUTH_USER])){
@@ -244,7 +244,7 @@ class Connection {
          "Authorization: %s %s%s",
          this->options[Options::AUTH_TYPE],
          authorization,
-         HttpClient::EOL
+         Client::EOL
        );
      }
 
@@ -253,7 +253,7 @@ class Connection {
        let this->httpHeader = this->httpHeader . sprintf(
          "Connection: %s%s",
          this->options[Options::CONNECTION],
-         HttpClient::EOL
+         Client::EOL
        );
      }
 
@@ -269,7 +269,7 @@ class Connection {
     *
     * If keep-alive connections are used, the handle will be stored and re-used
     *
-    * @throws \ArangoDB\Exception\ConnectException | \ArangoDB\Exception\ClientException
+    * @throws \Arango\Exception\ConnectException | \Arango\Exception\ClientException
     * @return resource - connection handler
     */
    public function getHandle(){
@@ -294,7 +294,7 @@ class Connection {
        }
      }
 
-     let handle = HttpClient::createConnection(this->options);
+     let handle = Client::createConnection(this->options);
 
      if(this->useKeepAlive && is_resource(handle)){
        let this->handle = handle;

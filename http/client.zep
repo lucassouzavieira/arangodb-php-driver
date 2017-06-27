@@ -1,19 +1,19 @@
-namespace ArangoDB\Http;
+namespace Arango\Http;
 
-use ArangoDB\Connection\Options;
-use ArangoDB\Connection\Endpoint;
-use ArangoDB\Exception\ConnectException;
-use ArangoDB\Exception\ClientException;
+use Arango\Connection\Options;
+use Arango\Connection\Endpoint;
+use Arango\Exception\ConnectException;
+use Arango\Exception\ClientException;
 
 /**
- * HttpClient to ArangoDB PHP Driver
+ * Client to Arango PHP Driver
  *
- * @package ArangoDB/Http
+ * @package Arango/Http
  * @abstract
- * @class HttpClient
+ * @class Client
  * @author Lucas S. Vieira
  */
-abstract class HttpClient {
+abstract class Client {
 
   /**
    * HTTP method constants
@@ -58,7 +58,7 @@ abstract class HttpClient {
   /**
    * Validate an HTTP method request name
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param string method - method name
    * @return boolean - always true - throw an exception if method is not valid
    */
@@ -134,7 +134,7 @@ abstract class HttpClient {
    * Create a one-time HTTP connection by opening a socket to the server
    * It is the caller's responsibility to close the socket
    *
-   * @throws \ArangoDB\Exception\ConnectException | \Exception
+   * @throws \Arango\Exception\ConnectException | \Exception
    * @param Options options - Connection options
    * @return resource - socket with server connection
    */
@@ -185,7 +185,7 @@ abstract class HttpClient {
     * @param string body - Optional body to post
     * @param array customHeaders - Any array containing header elements
     *
-    * @throws \ArangoDB\Exception\ClientException
+    * @throws \Arango\Exception\ClientException
     * @return string - Assembled HTTP request string
     */
    public static function buildRequest(<Options> options,
@@ -234,7 +234,7 @@ abstract class HttpClient {
     * @param string request - HTTP request as a string
     * @param string method - HTTP method used
     *
-    * @throws \ArangoDB\Exception\ClientException
+    * @throws \Arango\Exception\ClientException
     * @return string - HTTP response string
     */
    public static function transfer(socket, string request, string method) -> string {

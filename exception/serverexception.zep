@@ -1,12 +1,12 @@
 
-namespace ArangoDB\Exception;
+namespace Arango\Exception;
 
 /**
  * ServerException class
  *
  * Thrown by client when there is error on client side
  *
- * @package ArangoDB/Exception
+ * @package Arango/Exception
  * @class ServerException
  * @author Lucas S. Vieira
  */

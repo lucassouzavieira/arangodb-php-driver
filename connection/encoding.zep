@@ -1,14 +1,14 @@
 
-namespace ArangoDB\Connection;
+namespace Arango\Connection;
 
-use ArangoDB\Exception\ClientException;
+use Arango\Exception\ClientException;
 
 /**
  * Encoding class
  *
  * Assists in checking and validating string encoding
  *
- * @package ArangoDB\Connection
+ * @package Arango\Connection
  * @class Encoding
  * @author Lucas S. Vieira
  */
@@ -34,7 +34,7 @@ abstract class Encoding {
    * values of the array are utf-8, recursively.
    * It will raise an exception if it encounters wrong encoded strings.
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param array $data the data to check
    * @return void
    */

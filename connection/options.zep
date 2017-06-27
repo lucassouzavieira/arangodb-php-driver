@@ -1,15 +1,15 @@
 
-namespace ArangoDB\Connection;
+namespace Arango\Connection;
 
-use ArangoDB\Exception\ClientException;
-use ArangoDB\Policies\UpdatePolicy;
+use Arango\Exception\ClientException;
+use Arango\Policies\UpdatePolicy;
 
 /**
  * Options class
  *
  * Container to manage connection options
  *
- * @package ArangoDB/Connection
+ * @package Arango/Connection
  * @class Options
  * @author Lucas S. Vieira
  */
@@ -198,7 +198,7 @@ class Options implements \ArrayAccess {
   /**
    * Get an specific option
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @param string offset
    * @return mixed
    */
@@ -234,7 +234,7 @@ class Options implements \ArrayAccess {
   /**
    * Validate the options
    *
-   * @throws \ArangoDB\Exception\ClientException
+   * @throws \Arango\Exception\ClientException
    * @return void
    */
   private function validate() -> void {
