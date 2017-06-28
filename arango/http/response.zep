@@ -226,14 +226,4 @@ class Response {
      let this->batchPart = batchPart;
      return this;
    }
-
-   /**
-    * Return the batchPart of response
-    *
-    * @return Response
-    */
-   public function setBatchPart(<BatchPart> batchPart) -> <Response> {
-     let this->batchPart = batchPart;
-     return this;
-   }
 }
