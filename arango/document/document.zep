@@ -2,6 +2,7 @@
 namespace Arango\Document;
 
 use Arango\Validation\Validation;
+use Arango\Exception\ClientException;
 
 /**
  * Value object representing a single collection-based document
@@ -17,7 +18,9 @@ class Document implements \JsonSerializable, \Serializable {
    *
    * @var string
    */
-  protected id;
+  protected id {
+    get
+  };
 
   /**
    * The document key (might be null for new documents)
@@ -31,7 +34,9 @@ class Document implements \JsonSerializable, \Serializable {
    *
    * @var mixed
    */
-  protected revision;
+  protected revision {
+    get, set
+  };
 
   /**
    * The document attributes as associative array with names and values
@@ -92,15 +97,15 @@ class Document implements \JsonSerializable, \Serializable {
   public function __construct(array options = null) {
     if(!is_null(options)){
       if(isset(options[self::ENTRY_HIDDEN_ATTRIBUTES])) {
-        // this->setHiddenAttributes(options[self::ENTRY_HIDDEN_ATTRIBUTES]);
+        this->setHiddenAttributes(options[self::ENTRY_HIDDEN_ATTRIBUTES]);
       }
 
       if(isset(options[self::ENTRY_IGNORE_HIDDEN_ATTRIBUTES])) {
-        // this->setHiddenAttributes(options[self::ENTRY_IGNORE_HIDDEN_ATTRIBUTES]);
+        this->setIgnoreHiddenAttributes(options[self::ENTRY_IGNORE_HIDDEN_ATTRIBUTES]);
       }
 
       if(isset(options[self::ENTRY_IS_NEW])) {
-        // this->setHiddenAttributes(options[self::ENTRY_IS_NEW]);
+        this->setIsNew(options[self::ENTRY_IS_NEW]);
       }
     }
   }
@@ -175,7 +180,7 @@ class Document implements \JsonSerializable, \Serializable {
       document->set(key, value);
     }
 
-    // document->setChanged(true);
+    document->setChanged(true);
     return document;
   }
 
@@ -195,22 +200,22 @@ class Document implements \JsonSerializable, \Serializable {
 
     if(key[0] == underscore){
       if(key == self::ENTRY_ID) {
-        // this->setInternalId(value);
+        this->setInternalId(value);
         return;
       }
 
       if(key == self::ENTRY_KEY) {
-        // this->setInternalKey(value);
+        this->setInternalKey(value);
         return;
       }
 
       if(key == self::ENTRY_REVISION) {
-        // this->setRevision(value);
+        this->setRevision(value);
         return;
       }
 
       if(key == self::ENTRY_IS_NEW) {
-        // this->setIsNew(value);
+        this->setIsNew(value);
         return;
       }
     }
@@ -236,36 +241,211 @@ class Document implements \JsonSerializable, \Serializable {
 
     return null;
   }
+
+  /**
+   * Get all documents attributes
+   *
+   * @param mixed $options - optional, array of options for the getAll function, or the boolean value for $includeInternals
+   *                       Options are :
+   *                       '_includeInternals' - true to include the internal attributes. Defaults to false
+   *                       '_ignoreHiddenAttributes' - true to show hidden attributes. Defaults to false
+   *
+   * @return array - associative array with all documents attributes/values
+   */
+  public function getAll(array options = null) -> array {
+    boolean includeInternals = false;
+    boolean ignoreHiddenAttributes = true;
+    var hiddenAttributes = this->hiddenAttributes;
+
+    if(!is_null(options)) {
+      if(isset(options["_includeInternals"])) {
+        let includeInternals = (boolean) options["_includeInternals"];
+      }
+
+      if(isset(options["_ignoreHiddenAttributes"])) {
+        let ignoreHiddenAttributes = (boolean) options["_ignoreHiddenAttributes"];
+      }
+
+      if(isset(options[self::ENTRY_HIDDEN_ATTRIBUTES])) {
+        let hiddenAttributes = options[self::ENTRY_HIDDEN_ATTRIBUTES];
+      }
+    }
+
+    var data = this->values;
+    var nonInternals = ["changed", "values", self::ENTRY_HIDDEN_ATTRIBUTES];
+
+    if(includeInternals) {
+      var key, value, underscore = "_";
+
+      for key, value in data {
+        if(key[0] == underscore && strpos(key, underscore) != 0 && !in_array(key, nonInternals, true)){
+          let data[key] = value;
+        }
+      }
+    }
+
+    if(!ignoreHiddenAttributes) {
+      let data = this->filterHiddenAttributes(data, hiddenAttributes);
+    }
+
+    if(!is_null(this->key)) {
+      let data["_key"] = this->key;
+    }
+
+    return data;
+  }
+
+  /**
+   * Get the collection id
+   *
+   * Collection ids are generated on the server only. Collection ids are numeric but might be
+   * bigger than PHP_INT_MAX. To reliably store a collection id elsewhere, a PHP string should be used
+   *
+   * @return string | null - Collection id, if exists. Return null otherwise
+   */
+  public function getCollectionId() -> string | null {
+    var data;
+
+    if(!is_null(this->id)){
+      let data = explode("/", this->id);
+      return data[1];
+    }
+
+    return null;
+  }
+
+  /**
+   * Get all documents attributes for insertion / update
+   *
+   * @return array - associative array with all documents attributes/values
+   */
+  public function getAllForInsertUpdate() -> array {
+    array data = [];
+
+    var key, value;
+
+    for key, value in this->values {
+      if(key == "_id" || key == "_rev") {
+        continue;
+      }
+
+      if(key == "_key" && value == null){
+        continue;
+      }
+
+      let data[key] = value;
+    }
+
+    if(!is_null(this->key)){
+      let data["_key"] = this->key;
+    }
+
+    return data;
+  }
+
+  /**
+   * Returns the attributes with the hidden ones removed
+   *
+   * @param array attributes
+   * @param array hiddenAttributes
+   *
+   * @return array - Attributes array
+   */
+  private function filterHiddenAttributes(array attributes, array hiddenAttributes = null) -> array {
+    let hiddenAttributes = hiddenAttributes != null ? hiddenAttributes : this->getHiddenAttributes();
+
+    if(count(hiddenAttributes) > 0){
+      var key;
+
+      for key, _ in hiddenAttributes {
+        if(isset(attributes[key])){
+          unset(attributes[key]);
+        }
+      }
+    }
+
+    unset(attributes[self::ENTRY_HIDDEN_ATTRIBUTES]);
+    return attributes;
+  }
+
+  /**
+   * Set the internal document id
+   *
+   * This will throw if the id of an existing document gets updated to some other id
+   *
+   * @throws \Arango\Exception\ClientException
+   * @param string id - Internal document id
+   *
+   * @return void
+   */
+  public function setInternalId(string id) -> void {
+    if(!is_null(this->id) && this->id != id) {
+      throw new ClientException("Should not update the id of an existing document");
+    }
+
+    if(!preg_match("/^[a-zA-Z0-9_-]{1,64}\/[a-zA-Z0-9_:.@\-()+,=;$!*\'%]{1,254}$/", id)){
+      throw new ClientException("Invalid format for document id");
+    }
+
+    let this->id = id;
+  }
+
+  /**
+   * Set the internal document key
+   *
+   * This will throw if the key of an existing document gets updated to some other key
+   *
+   * @throws \Arango\Exception\ClientException
+   * @param string key - Internal document key
+   *
+   * @return void
+   */
+  public function setInternalKey(string key) -> void {
+    if(!is_null(this->key) && this->key != key) {
+      throw new ClientException("Should not update the id of an existing document");
+    }
+
+    if(!preg_match("/^[a-zA-Z0-9_:.@\-()+,=;$!*\'%]{1,254}$/", key)){
+      throw new ClientException("Invalid format for document id");
+    }
+
+    let this->key = key;
+  }
+
   /**
    * Serialize instance as JSON document
-   *
-   * TODO implements
    *
    * @return array
    */
   public function jsonSerialize() -> array {
-    return [];
+    return this->getAll([
+      "_includeInternals" : false,
+      "_ignoreHiddenAttributes" : false
+    ]);
   }
 
   /**
    * Serialize instance
    *
-   * TODO implements
-   *
    * @return string
    */
   public function serialize() -> string {
-    return "String";
+    return serialize(this->getAll());
   }
 
   /**
    * Unserialize instance
    *
-   * TODO implements
-   *
    * @return void
    */
   public function unserialize(string serialized) -> void {
+    var data = unserialize(serialized);
 
+    if(isset(data["_key"])){
+      let this->key = data["_key"];
+      unset(data["_key"]);
+    }
+
+    let this->values = data;
   }
 }
