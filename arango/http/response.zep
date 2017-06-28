@@ -151,4 +151,89 @@ class Response {
    public function getLocation() -> string | null {
      return this->getHeader(self::HEADER_LOCATION);
    }
+
+   /**
+    * Return the body of the response
+    *
+    * @return string - body of the response
+    */
+   public function getBody() -> string {
+     return this->body;
+   }
+
+   /**
+    * Return the result line (first header line) of the response
+    *
+    * @return string - The result line
+    */
+   public function getResult() -> string {
+     return this->result;
+   }
+
+   /**
+    * Return the data from the JSON-encoded body
+    *
+    * @throws \Arango\Exception\ClientException
+    * @returns string - JSON-encoded body
+    */
+   public function getJson() -> string {
+     if(this->validateBody()){
+       return this->body;
+     }
+
+     throw new ClientException("Got a malformed result from the server");
+   }
+
+   /**
+    * Return the data from the JSON-encoded body as associative array
+    *
+    * @throws \Arango\Exception\ClientException
+    * @returns array - Body as array
+    */
+   public function toArray() -> array {
+     if(this->validateBody()){
+       return json_decode(this->body, true);
+     }
+
+     throw new ClientException("Got a malformed result from the server");
+   }
+
+   /**
+    * Validate the body response
+    *
+    * @returns boolean - True if body is valid, false otherwise
+    */
+   private function validateBody() -> boolean {
+     var json;
+     let json = json_decode(this->body, true);
+
+     if(!is_array(json)){
+       if(this->wasAsync){
+         return true;
+       }
+     }
+
+     return false;
+   }
+
+   /**
+    * Set the batchPart of Response
+    *
+    * @param BatchPart batchPart
+    * @return Response
+    */
+   public function setBatchPart(<BatchPart> batchPart) -> <Response> {
+     let this->batchPart = batchPart;
+     return this;
+   }
+
+   /**
+    * Return the batchPart of response
+    *
+    * @return Response
+    */
+   public function setBatchPart(<BatchPart> batchPart) -> <Response> {
+     let this->batchPart = batchPart;
+     return this;
+   }
 }
