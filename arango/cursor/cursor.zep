@@ -16,7 +16,7 @@ use Arango\Exception\ClientException;
  * @class Cursor
  * @author Lucas S. Vieira
  */
-class Cursor {
+class Cursor implements \Iterator {
 
   /**
    * The connection object
@@ -127,7 +127,7 @@ class Cursor {
    *
    * @throws \Arango\Exception\ClientException
    */
-  public function __construct(<Connection> connection, array data, array options){
+  public function __construct(<Connection> connection, array data, array options) {
     let this->connection = connection;
     let this->data = data;
     let this->id = null;
@@ -163,6 +163,99 @@ class Cursor {
 
     // this->add((array) data[self::ENTRY_RESULT]);
     // this->updateLenght();
-    // this->rewind();
+    this->rewind();
+  }
+
+  /**
+   * Get the full count of the cursor (ignoring the outermost LIMIT)
+   *
+   * @returns int - Total number of results
+   */
+  public function getFullCount() -> int | null {
+    return this->fullCount;
+  }
+
+  /**
+   * Get the cached attribute for the result set
+   *
+   * @returns boolean - whether or not the query result was served from the AQL query cache
+   */
+  public function getCached() -> boolean {
+    return this->cached;
+  }
+
+  /**
+   * Rewind the cursor, necessary for Iterator
+   *
+   * @returns void
+   */
+  public function rewind() -> void {
+    let this->position = 0;
+  }
+
+  /**
+   * Return the current result row, necessary for Iterator
+   *
+   * @returns array - The current result row as an associative array
+   */
+  public function current() -> array {
+    return this->result[this->position];
+  }
+
+  /**
+   * Return the index of the current result row, necessary for Iterator
+   *
+   * @returns int - The current result row index
+   */
+  public function key() -> int {
+    return this->position;
+  }
+
+  /**
+   * Advance the cursor, necessary for Iterator
+   *
+   * @return void
+   */
+  public function next() -> void {
+    let this->position = this->position + 1;
+  }
+
+  /**
+   *  Check if cursor can be advanced further, necessary for Iterator
+   *
+   * This might issue additional HTTP requests to fetch any outstanding
+   * results from the server
+   *
+   * @throws \Exception
+   * @return boolean - True if the cursor can be advanced further, false if cursor is at end
+   */
+  public function valid() -> boolean {
+
+    if(this->position <= this->length - 1) {
+      return true;
+    }
+
+    if(!this->hasMore || !this->id) {
+      return false;
+    }
+
+    // this->fetchOutstanding();
+    return (this->position <= this->length - 1);
+  }
+
+  /**
+   * Sanitize the result set rows
+   *
+   * This will remove the _id and _rev attributes from the results if the
+   * "sanitize" option is set
+   *
+   * TODO implements this function
+   *
+   * @param array rows - Array of rows to be sanitized
+   *
+   * @return array - Sanitized rows
+   */
+  private function sanitize(array rows) -> array {
+    return [];
   }
 }
