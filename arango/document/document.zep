@@ -27,7 +27,9 @@ class Document implements \JsonSerializable, \Serializable {
    *
    * @var string
    */
-  protected key;
+  protected key {
+    get
+  };
 
   /**
    * The document revision (might be null for new documents)
@@ -402,11 +404,11 @@ class Document implements \JsonSerializable, \Serializable {
    */
   public function setInternalKey(string key) -> void {
     if(!is_null(this->key) && this->key != key) {
-      throw new ClientException("Should not update the id of an existing document");
+      throw new ClientException("Should not update the key of an existing document");
     }
 
     if(!preg_match("/^[a-zA-Z0-9_:.@\-()+,=;$!*\'%]{1,254}$/", key)){
-      throw new ClientException("Invalid format for document id");
+      throw new ClientException("Invalid format for document key");
     }
 
     let this->key = key;
