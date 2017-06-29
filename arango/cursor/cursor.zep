@@ -2,6 +2,9 @@
 namespace Arango\Cursor;
 
 use Arango\Connection\Connection;
+use Arango\Http\Url;
+use Arango\Document\Document;
+use Arango\Document\Edge;
 use Arango\Exception\ClientException;
 
 /**
@@ -58,7 +61,9 @@ class Cursor implements \Iterator {
    *
    * @var mixed
    */
-  private id;
+  private id {
+    get
+  };
 
   /**
    * Current position in result set iteration (zero-based)
@@ -79,28 +84,36 @@ class Cursor implements \Iterator {
    *
    * @var int
    */
-  private fullCount;
+  private fullCount {
+    get
+  };
 
   /**
    * Extra data (statistics) returned from the statement
    *
    * @var array
    */
-  private extra;
+  private extra {
+    get
+  };
 
   /**
    * Number of HTTP calls that were made to build the cursor result
    *
    * @var array
    */
-  private fetches = 1;
+  private fetches = 1 {
+    get
+  };
 
   /**
    * Whether or not the query result was served from the AQL query result cache
    *
    * @var boolean
    */
-  private cached;
+  private cached {
+    get
+  };
 
   /**
    * Results entries for class parameters
@@ -162,26 +175,105 @@ class Cursor implements \Iterator {
     let this->result = [];
 
     // this->add((array) data[self::ENTRY_RESULT]);
-    // this->updateLenght();
+    this->updateLenght();
     this->rewind();
   }
 
   /**
-   * Get the full count of the cursor (ignoring the outermost LIMIT)
+   * Create an array of results from the input array
    *
-   * @returns int - Total number of results
+   * @param array data
+   *
+   * @return void
    */
-  public function getFullCount() -> int | null {
-    return this->fullCount;
+  private function addFlatFromArray(array data) -> void {
+    let this->result[] = data;
   }
 
   /**
-   * Get the cached attribute for the result set
+   * Create a document from the input array
    *
-   * @returns boolean - whether or not the query result was served from the AQL query cache
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param array data
+   *
+   * @return void
    */
-  public function getCached() -> boolean {
-    return this->cached;
+  private function addDocumentsFromArray(array data) -> void {
+    let this->result[] = Document::createFromArray(data, this->options);
+  }
+
+  /**
+   * Create an array of paths from input array
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param array data - array of incoming paths Arrays
+   *
+   * @return void
+   */
+  private function addPathsFromArray(array data) -> void {
+    var entry;
+
+    let entry = [
+      "vertices" : [],
+      "edges" : [],
+      "source" : Document::createFromArray(data["source"], this->options),
+      "destination" : Document::createFromArray(data["destination"], this->options)
+    ];
+
+    var value;
+    for value in data["vertices"] {
+      let entry["vertices"][] = Document::createFromArray(value, this->options);
+    }
+
+    for value in data["edges"] {
+      let entry["edges"][] = Edge::createFromArray(value, this->options);
+    }
+
+    let this->result = entry;
+  }
+
+  /**
+   * Create an array of shortest paths from the input array
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param array data - array of incoming paths Arrays
+   *
+   * @return void
+   */
+  private function addShortestPathFromArray(array data) -> void {
+    var entry, path;
+
+    if(!isset(data["vertices"])){
+      return;
+    }
+
+    let entry = [
+      "paths" : [],
+      "source" : Document::createFromArray(data["source"], this->options),
+      "distance" : data["distance"],
+      "destination" : Document::createFromArray(data["destination"], this->options)
+    ];
+
+    let path = [
+      "vertices" : [],
+      "edges" : []
+    ];
+
+    var value;
+    for value in data["vertices"] {
+      let path["vertices"][] = value;
+    }
+
+    for value in data["edges"] {
+      let entry["edges"][] = Edge::createFromArray(value, this->options);
+    }
+
+    let entry["paths"] = path;
+
+    let this->result = entry;
   }
 
   /**
@@ -249,13 +341,129 @@ class Cursor implements \Iterator {
    * This will remove the _id and _rev attributes from the results if the
    * "sanitize" option is set
    *
-   * TODO implements this function
-   *
    * @param array rows - Array of rows to be sanitized
    *
    * @return array - Sanitized rows
    */
   private function sanitize(array rows) -> array {
+
+    if(isset(this->options[self::ENTRY_SANITIZE]) && this->options[self::ENTRY_SANITIZE]){
+      var key, value;
+      for key, value in rows {
+        if(is_array(value) && isset(value[Document::ENTRY_ID])){
+          unset(rows[key][Document::ENTRY_ID]);
+        }
+
+        if(is_array(value) && isset(value[Document::ENTRY_REVISION])){
+          unset(rows[key][Document::ENTRY_REVISION]);
+        }
+      }
+    }
+
+    return rows;
+  }
+
+  /**
+   * Set the length of the fetched result set
+   *
+   * @return void
+   */
+  private function updateLenght() -> void {
+    let this->length = count(this->result);
+  }
+
+  /**
+   * Return the base url for cursor
+   *
+   * @return string
+   */
+  private function url() -> string {
+    if(isset(this->options[self::ENTRY_BASE_URL])){
+      return this->options[self::ENTRY_BASE_URL];
+    }
+
+    return Url::CURSOR;
+  }
+
+  /**
+   * Get a statistical figure value from the query result
+   *
+   * @param string name - Name of figure to return
+   *
+   * @return int
+   */
+  private function getStatValue(string name) -> int {
+    if(isset(this->options[self::ENTRY_STATS][name])){
+      return this->options[self::ENTRY_STATS][name];
+    }
+
+    return 0;
+  }
+
+  /**
+   * Get MetaData of the current cursor
+   *
+   * @return array
+   */
+  public function getMetadata() -> array | null {
+    return this->data;
+  }
+
+  /**
+   * Return the warnings issued during query execution
+   *
+   * @return array
+   */
+  public function getWarnings() -> array {
+    if(isset(this->extra["warnings"])){
+      return this->extra["warnings"];
+    }
+
     return [];
+  }
+
+  /**
+   * Return the number of writes executed by the query
+   *
+   * @return int
+   */
+  public function getWritesExecuted() -> int {
+    return this->getStatValue("writesExecuted");
+  }
+
+  /**
+   * Return the number of ignored write operations from the query
+   *
+   * @return int
+   */
+  public function getWritesIgnored() -> int {
+    return this->getStatValue("writesIgnored");
+  }
+
+  /**
+   * Return the number of documents iterated over in full scans
+   *
+   * @return int
+   */
+  public function getScannedFull() -> int {
+    return this->getStatValue("scannedFull");
+  }
+
+  /**
+   * Return the number of documents iterated over in index scans
+   *
+   * @return int
+   */
+  public function getScannedIndex() -> int {
+    return this->getStatValue("scannedIndex");
+  }
+
+  /**
+   * Return the number of documents filtered by query
+   *
+   * @return int
+   */
+  public function getFiltered() -> int {
+    return this->getStatValue("filtered");
   }
 }
