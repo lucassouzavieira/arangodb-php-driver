@@ -3,6 +3,8 @@ namespace Arango\Connection;
 
 use Arango\Http\Client;
 use Arango\Http\Request;
+use Arango\Batch\Batch;
+use Arango\Batch\BatchPart;
 use Arango\Connection\Options;
 use Arango\Connection\Encoding;
 use Arango\Exception\ClientException;
@@ -174,6 +176,26 @@ class Connection extends Request {
     this->updateHttpHeader();
   }
 
+
+  /**
+   * Set an active batch
+   *
+   * @param Batch name - name of options
+   * @return void
+   */
+  public function setActiveBatch(<Batch> batch) -> void {
+    let this->activeBatch = batch;
+  }
+
+  /**
+   * Get an active batch
+   *
+   * @return void
+   */
+  public function getActiveBatch() -> <Batch> | null {
+    return this->activeBatch;
+  }
+
   /**
    * Get an option set for the connection
    *
@@ -323,7 +345,7 @@ class Connection extends Request {
     */
    protected function executeRequest(string method, string url, string data, array customHeaders) -> <Response> {
      boolean wasAsync = false;
-     var request;
+     var request, handle, response;
 
      if(this->httpHeader == "") {
        throw new \Exception("Invalid http header");
@@ -359,19 +381,22 @@ class Connection extends Request {
        this->options->offsetSet(Options::BATCHPART, false);
      }
 
-     var traceFunc = this->options[Options::TRACE];
+     var traceFunc;
+     let traceFunc = this->options[Options::TRACE];
 
      if(traceFunc) {
-       if( this->options[Options::ENHANCED_TRACE]) {
-         var header = Client::parseHttpMessage(request, url, method);
-         var headers = Client::parseHttpHeaders(header);
-        //  traceFunc(new TraceRequest(headers[2], method, url, data));
-      } else {
-        // traceFunc("send", request);
-      }
+       if(this->options[Options::ENHANCED_TRACE]) {
+         var header, headers;
+         let header = Client::parseHttpMessage(request, url, method);
+         let headers = Client::parseHttpHeaders(header);
+         //traceFunc(new TraceRequest(headers[2], method, url, data));
+       } else {
+         //traceFunc("send", request);
+       }
      }
 
-     handle = this->getHandle();
+     let handle = this->getHandle();
+     return response;
    }
 
    /**
