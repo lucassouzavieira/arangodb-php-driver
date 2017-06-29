@@ -13,9 +13,53 @@ namespace Arango\Exception;
 class ServerException extends \Exception {
 
   /**
-   * TODO add class name
-   **/
+   * Optional details for the exception
+   *
+   * @var array
+   */
+  private details = [] {
+    get, set
+  };
+
+  /**
+   * Server exception indexes
+   */
+  const ENTRY_CODE = "errorNum";
+  const ENTRY_MESSAGE = "errorMessage";
+
+
   public function __toString(){
-    return this->getMessage();
+    return "ServerException: " . this->getServerCode() . " " . this->getMessage();
+  }
+
+
+  /**
+   * Get server error code
+   * If the server has provided additional details about the error
+   * that occurred, this will return the server error code
+   *
+   * @return int
+   */
+  public function getServerCode() -> int {
+    if(isset(this->details[self::ENTRY_CODE])){
+      return this->details[self::ENTRY_CODE];
+    }
+
+    return this->getCode();
+  }
+
+  /**
+   * Get server error message
+   * If the server has provided additional details about the error
+   * that occurred, this will return the server error string
+   *
+   * @return string
+   */
+  public function getServerMessage() -> string {
+    if(isset(this->details[self::ENTRY_MESSAGE])){
+      return this->details[self::ENTRY_MESSAGE];
+    }
+
+    return "";
   }
 }

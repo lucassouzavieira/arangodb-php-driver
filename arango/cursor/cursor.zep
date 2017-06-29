@@ -5,6 +5,7 @@ use Arango\Connection\Connection;
 use Arango\Http\Url;
 use Arango\Document\Document;
 use Arango\Document\Edge;
+use Arango\Document\Vertex;
 use Arango\Exception\ClientException;
 
 /**
@@ -231,7 +232,7 @@ class Cursor implements \Iterator {
       let entry["edges"][] = Edge::createFromArray(value, this->options);
     }
 
-    let this->result = entry;
+    let this->result[] = entry;
   }
 
   /**
@@ -273,8 +274,140 @@ class Cursor implements \Iterator {
 
     let entry["paths"] = path;
 
-    let this->result = entry;
+    let this->result[] = entry;
   }
+
+  /**
+   * Create an array of distances from the input array
+   *
+   * @param array data - array of incoming "paths" Arrays
+   *
+   * @return void
+   */
+  private function addDistanceToFromArray(array data) -> void {
+    var entry;
+
+    let entry = [
+      "source": data["startVertex"],
+      "distance": data["distance"],
+      "destination": data["vertex"]
+    ];
+
+    let this->result[] = entry;
+  }
+
+  /**
+   * Create an array of common neighbors from the input array
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param array data - array of incoming "paths" Arrays
+   *
+   * @return void
+   */
+  private function addCommonNeighborsFromArray(array data) -> void {
+    var left, right;
+
+    let left = data["left"];
+    let right = data["right"];
+
+    if(!isset(this->result[left])) {
+      let this->result[left] = [];
+    }
+
+    if(!isset(this->result[left][right])) {
+      let this->result[left][right] = [];
+    }
+
+    var neighbor;
+
+    for neighbor in data["neighbors"] {
+      let this->result[left][right][] = Document::createFromArray(neighbor);
+    }
+  }
+
+  /**
+   * Create an array of common properties from the input array
+   *
+   * @param array data - array of incoming "paths" Arrays
+   *
+   * @return void
+   */
+  private function addCommonPropertiesFromArray(array data) -> void {
+    var keys;
+
+    let keys = array_keys(data);
+    let this->result[keys[0]] = [];
+
+    var common;
+    for common in data[keys[0]] {
+      var id;
+      let id = common["_id"];
+      unset(common["_id"]);
+      let this->result[keys[0]][id] = common;
+    }
+  }
+
+  /**
+   * Create an array of figuresfrom the input array
+   *
+   * @param array data - array of incoming "paths" Arrays
+   *
+   * @return void
+   */
+  private function addFigureFromArray(array data) -> void {
+    let this->result = data;
+  }
+
+  /**
+   * Create an array of Edges from the input array
+   *
+   * @param array data - array of incoming "paths" Arrays
+   *
+   * @return void
+   */
+  private function addEdgeFromArray(array data) -> void {
+    let this->result[] = Edge::createFromArray(data, this->options);
+  }
+
+  /**
+   * Create an array of Vertex from the input array
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param array data - array of incoming "paths" Arrays
+   *
+   * @return void
+   */
+  private function addVerticesFromArray(array data) -> void {
+    let this->result[] = Vertex::createFromArray(data, this->options);
+  }
+
+  /**
+   * Fetch outstanding results from the server
+   *
+   * TODO revision
+   *
+   * @throws \Exception
+   * @return void
+   */
+  public function fetchOutstanding() -> void {
+    var response, data;
+
+    // let response = this->connection->put(this->url() . "/" . this->id, "", []);
+    let this->fetches = this->fetches + 1;
+    // let data = response->getJson();
+    let this->hasMore = (boolean) data[self::ENTRY_HAS_MORE];
+    // this->add(data[self::ENTRY_RESULT]);
+
+    if(!this->hasMore) {
+      // We have fetched the complete result set and can unset id now
+      let this->id = null;
+    }
+
+    this->updateLenght();
+  }
+
 
   /**
    * Rewind the cursor, necessary for Iterator

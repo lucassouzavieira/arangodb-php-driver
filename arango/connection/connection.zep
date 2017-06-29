@@ -1,9 +1,10 @@
 
 namespace Arango\Connection;
 
+use Arango\Http\Client;
+use Arango\Http\Request;
 use Arango\Connection\Options;
 use Arango\Connection\Encoding;
-use Arango\Http\Client;
 use Arango\Exception\ClientException;
 use Arango\Exception\ConnectException;
 
@@ -22,7 +23,7 @@ use Arango\Exception\ConnectException;
  * @class Connection
  * @author Lucas S. Vieira
  */
-class Connection {
+class Connection extends Request {
 
   /**
    * Connection options
@@ -301,5 +302,100 @@ class Connection {
      }
 
      return handle;
+   }
+
+   /**
+    * Execute an HTTP request and return the results
+    *
+    * This function will throw if no connection to the server can be established or if
+    * there is a problem during data exchange with the server.
+    *
+    * TODO revision
+    *
+    * @throws \Exception
+    *
+    * @param string method       - HTTP request method
+    * @param string url          - HTTP url
+    * @param string data         - HTTP request data
+    * @param array customHeaders - Any custom headers for the request
+    *
+    * @return Response
+    */
+   protected function executeRequest(string method, string url, string data, array customHeaders) -> <Response> {
+     boolean wasAsync = false;
+     var request;
+
+     if(this->httpHeader == "") {
+       throw new \Exception("Invalid http header");
+     }
+
+     if(isset(customHeaders[Client::ASYNC_HEADER])) {
+       let wasAsync = true;
+     }
+
+     if (this->batchRequest == false) {
+       if(this->captureBatch == true) {
+         this->options->offsetSet(Options::BATCHPART, true);
+         let request = Client::buildRequest(this->options, this->httpHeader, method, url, data, customHeaders);
+         this->options->offsetSet(Options::BATCHPART, false);
+       } else {
+         let request = Client::buildRequest(this->options, this->httpHeader, method, url, data, customHeaders);
+       }
+
+       if(this->captureBatch == true) {
+         var batchPart;
+
+         let batchPart = this->doBatch(method, request);
+
+         if(!is_null(batchPart)) {
+           return batchPart;
+         }
+       }
+     } else {
+       let this->batchRequest = false;
+
+       this->options->offsetSet(Options::BATCHPART, true);
+       let request = Client::buildRequest(this->options, this->httpHeader, method, url, data, customHeaders);
+       this->options->offsetSet(Options::BATCHPART, false);
+     }
+
+     var traceFunc = this->options[Options::TRACE];
+
+     if(traceFunc) {
+       if( this->options[Options::ENHANCED_TRACE]) {
+         var header = Client::parseHttpMessage(request, url, method);
+         var headers = Client::parseHttpHeaders(header);
+        //  traceFunc(new TraceRequest(headers[2], method, url, data));
+      } else {
+        // traceFunc("send", request);
+      }
+     }
+
+     handle = this->getHandle();
+   }
+
+   /**
+    * This is a helper function to executeRequest that captures requests if we're in batch mode
+    *
+    * @throws \Arango\Exception\ClientException
+    *
+    * @param string method - The method request
+    * @param string request - The request to proccess
+    *
+    * This checks if we're in batch mode and returns a placeholder object,
+    * since we need to return some object that is expected by the caller.
+    * if we're not in batch mode it does not return anything.
+    *
+    * @return BatchPart | null
+    */
+   private function doBatch(string method, string request) -> <BatchPart> | null {
+     var batchPart = null;
+
+     if(this->captureBatch) {
+       var batch = this->getActiveBatch();
+       let batchPart = batch->append(method, request);
+     }
+
+     return batchPart;
    }
 }
