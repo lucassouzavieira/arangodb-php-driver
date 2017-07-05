@@ -3,6 +3,7 @@ namespace Arango\Batch;
 
 use Arango\Http\Response;
 use Arango\Connection\Connection;
+use Arango\Exception\ClientException;
 use Arango\Cursor\Cursor;
 
 /**
@@ -108,7 +109,7 @@ class Batch {
     let this->batchPartCursorOptions = [Cursor::ENTRY_SANITIZE : this->sanitize];
 
     if (isset(options["startCapture"]) && (boolean) options["startCapture"]) {
-      // this->startCapture();
+      this->startCapture();
     }
   }
 
@@ -192,6 +193,62 @@ class Batch {
     this->setActive();
     this->setCapture(true);
   }
+
+  /**
+   * Stop capturing requests.
+   * If the batch has not been processed yet,
+   * more requests can be appended by calling startCapture() again.
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @return void
+   */
+  public function stopCapture() -> void {
+
+    if(this->isActive() && this->isCapturing()) {
+      this->setCapture(false);
+      return;
+    }
+
+    throw new ClientException("Cannot stop capturing with this batch. Batch is not active");
+  }
+
+  /**
+   * Sets connection into Batch-Request mode.
+   * This is necessary to distinguish between normal and the batch request.
+   *
+   * @param boolean state
+   *
+   * @return void
+   */
+  private function setBatchRequest(boolean state) -> void {
+    this->connection->setBatchRequest(state);
+    let this->processed = true;
+  }
+
+  /**
+   * Sets the id of the next batch-part.
+   * The id can later be used to retrieve the batch-part.
+   *
+   * @param mixed batchPartId
+   *
+   * @return void
+   */
+  public function nextBatchPartId(batchPartId) -> void {
+    let this->nextBatchPartId = batchPartId;
+  }
+
+  /**
+   * Set client side cursor options (for example: sanitize) for the next batch part.
+   *
+   * @param mixed batchPartCursorOptions
+   *
+   * @return void
+   */
+  public function nextBatchPartCursorOptions(batchPartCursorOptions) -> void {
+    let this->batchPartCursorOptions = batchPartCursorOptions;
+  }
+
 
   public function append(method, request) {
     return true;
