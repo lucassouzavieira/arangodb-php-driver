@@ -190,7 +190,7 @@ class Connection extends Request {
   /**
    * Get an active batch
    *
-   * @return void
+   * @return Batch | null
    */
   public function getActiveBatch() -> <Batch> | null {
     return this->activeBatch;
@@ -343,7 +343,7 @@ class Connection extends Request {
     *
     * @return Response
     */
-   protected function executeRequest(string method, string url, string data, array customHeaders) -> <Response> {
+   public function executeRequest(string method, string url, string data, array customHeaders) -> <Response> {
      boolean wasAsync = false;
      var request, handle, response;
 
@@ -422,5 +422,14 @@ class Connection extends Request {
      }
 
      return batchPart;
+   }
+
+   /**
+    * Returns true if this connection is in Batch-Capture mode
+    *
+    * @return boolean
+    */
+   public function isInBatchCaptureMode() -> boolean {
+     return this->captureBatch;
    }
 }
