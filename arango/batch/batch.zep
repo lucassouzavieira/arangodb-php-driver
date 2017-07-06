@@ -309,4 +309,88 @@ class Batch {
 
     return response;
   }
+
+  /**
+   * Split batch request and use ContentId as array key
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param mixed pattern
+   * @param mixed content
+   *
+   * @return array
+   */
+  public function splitWithContentIdKey(pattern, content) -> array {
+    array data;
+    var exploded;
+
+    let exploded = explode(pattern, content);
+
+    var key, value;
+    for key, value in exploded {
+      var response, contentId;
+      let response = new Response(value);
+      let contentId = response->getHeader("Content-Id");
+
+      if(!is_null(contentId)) {
+        let data[contentId] = value;
+        continue;
+      }
+
+      let data[key] = value;
+    }
+
+    return data;
+  }
+
+  /**
+   * Processes this batch. This sends the captured requests to the server as one batch.
+   * Batch if processing of the batch was successful or the HttpResponse object in case of a failure.
+   * A successful process just means that tha parts were processed.
+   * Each part has it's own response though and should be checked on its own.
+   *
+   * TODO implements
+   *
+   * @throws \Arango\Exception\ClientException
+   * @throws \Arango\Exception\Exception
+   *
+   * @return \Arango\Http\Response | \Arango\Batch\Batch
+   */
+  public function process() -> <Response> | <Batch> {
+    var data, batchParts, combinedDataHeader;
+
+    if(this->isCapturing()) {
+      this->stopCapture();
+    }
+
+    this->setBatchRequest(true);
+    let data = "";
+    let batchParts = this->batchParts;
+
+    if(count(batchParts) == 0) {
+      throw new ClientException("Cannot process empty batch");
+    }
+
+    let combinedDataHeader = "--" . Client::MIME_BOUNDARY . Client::EOL;
+    let combinedDataHeader = combinedDataHeader . "Content-Type: application/x-arango-batchpart" . Client::EOL;
+
+    var batchValue;
+    for _, batchValue in batchParts {
+      if(is_null(batchValue)) {
+        continue;
+      }
+
+      let data = data . combinedDataHeader;
+
+      if(!is_null(batchValue->getId())) {
+        let data = data . "Content-Id: " . (string) batchValue->getId() . Client::SEPARATOR;
+      } else {
+        let data = data . Client::EOL;
+      }
+
+      let data = data . (string) batchValue->getRequest() . Client::EOL;
+    }
+
+    let data = data . "--" . Client::MIME_BOUNDARY . "--" . Client::SEPARATOR;
+  }
 }

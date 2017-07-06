@@ -59,4 +59,6 @@ class BatchPart {
    public function __construct(<Batch> batch, id, type, request, response, options) {
 
    }
+
+
 }
