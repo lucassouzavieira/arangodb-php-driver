@@ -301,4 +301,17 @@ abstract class Client {
 
      return result;
    }
+
+   /**
+    * Validate the method name
+    *
+    * @param string method
+    *
+    * @return boolean
+    */
+   public static function isValidMethod(string method) -> boolean {
+     return in_array(method, [
+       self::GET, self::POST, self::PUT, self::DELETE, self::HEAD, self::PATCH
+     ]);
+   }
 }

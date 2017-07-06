@@ -2,6 +2,7 @@
 namespace Arango\Batch;
 
 use Arango\Http\Response;
+use Arango\Http\Client;
 use Arango\Connection\Connection;
 use Arango\Exception\ClientException;
 use Arango\Cursor\Cursor;
@@ -14,6 +15,15 @@ use Arango\Cursor\Cursor;
  * @author Lucas S. Vieira
  */
 class Batch {
+
+  /**
+   * Document type
+   *
+   * @var string
+   */
+  private documentType = "Document" {
+    get, set
+  };
 
   /**
    * Batch response object
@@ -214,19 +224,6 @@ class Batch {
   }
 
   /**
-   * Sets connection into Batch-Request mode.
-   * This is necessary to distinguish between normal and the batch request.
-   *
-   * @param boolean state
-   *
-   * @return void
-   */
-  private function setBatchRequest(boolean state) -> void {
-    this->connection->setBatchRequest(state);
-    let this->processed = true;
-  }
-
-  /**
    * Sets the id of the next batch-part.
    * The id can later be used to retrieve the batch-part.
    *
@@ -249,8 +246,67 @@ class Batch {
     let this->batchPartCursorOptions = batchPartCursorOptions;
   }
 
+  /**
+   * Append the request to the batch-part
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param string method   - The method of request
+   * @param string request  - The request that will get appended to the batch
+   *
+   * @return \Arango\Http\Response
+   */
+  public function append(string method, string request) -> <Response> {
+    var regs, type, batchPart, batchPartId, result, response;
 
-  public function append(method, request) {
-    return true;
+    if(!Client::isValidMethod(method)){
+      throw new ClientException("Invalid HTTP method supplied for batch");
+    }
+
+    preg_match("%/_api/simple/(?P<simple>\w*)|/_api/(?P<direct>\w*)%ix", request, regs);
+
+    if(!isset(regs["direct"])){
+      let regs["direct"] = "";
+    }
+
+    let type = regs["direct"] != "" ? regs["direct"] : regs["simple"];
+
+    if(method == Client::GET && type == regs["direct"]){
+      let type = "get" . type;
+    }
+
+    if(is_null(this->nextBatchPartId)) {
+      var nextNumeric = 0;
+      if(is_a(this->batchParts, "\\SplFixedArray")) {
+        let nextNumeric = this->nextId;
+        let this->nextId = this->nextId + 1;
+      } else {
+        let nextNumeric = count(this->batchParts);
+      }
+
+      let batchPartId = nextNumeric;
+    } else {
+      let batchPartId = this->nextBatchPartId;
+      let this->nextBatchPartId = null;
+    }
+
+    let result = "HTTP/1.1 202 Accepted " . Client::EOL;
+    let result = result . "location: /_db/_system/_api/document/0/0" . Client::EOL;
+    let result = result . "content-type: application/json; charset=utf-8" . Client::EOL;
+    let result = result . "etag: \"0\"" . Client::EOL;
+    let result = result . "connection: Close" . Client::EOL;
+    let result = result . "{\"error\":false,\"_id\":\"0/0\",\"id\":\"0\",\"_rev\":0,\"hasMore\":1, \"result\":[{}], \"documents\":[{}]}". Client::EOL;
+
+    let response = new Response(result);
+
+    let batchPart = new BatchPart(this, batchPartId, type, request, response, [
+      "cursorOptions" : this->batchPartCursorOptions,
+      "_documentClass" : this->documentType
+    ]);
+
+    let this->batchParts[batchPartId] = batchPart;
+    response->setBatchPart(batchPart);
+
+    return response;
   }
 }
