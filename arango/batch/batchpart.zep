@@ -3,6 +3,9 @@ namespace Arango\Batch;
 
 use Arango\Batch\Batch;
 use Arango\Cursor\Cursor;
+use Arango\Document\Edge;
+use Arango\Document\Document;
+use Arango\Handler\EdgeHandler;
 use Arango\Exception\ClientException;
 
 /**
@@ -43,6 +46,9 @@ class BatchPart {
 
    /**
     * Batch part request for this instance
+    * TODO
+    *   refactor request setter and getter.
+    *   This attribute must be an instance of \Arango\Http\Response
     *
     * @var string
     */
@@ -147,6 +153,75 @@ class BatchPart {
     */
    public function getProcessedResponse()
    {
-     return null;
+     var documentClass, response, options, body;
+
+     let documentClass = this->documentClass;
+     let response = this->getResponse();
+
+     if(!in_array(this->type, [
+       "first", "getdocument", "document", "getedge",
+       "edge", "getedges", "getcollection", "collection",
+       "cursor", "all", "by", "remove"
+     ])) {
+       throw new ClientException("Could not determine response data type");
+     }
+
+     if(this->type == "first") {
+       let body = response->toArray();
+       if(!isset(body["error"]) || body["error"] == false) {
+         let options = this->getCursorOptions();
+         let options["_isNew"] = false;
+         let response = {documentClass}::createFromArray(body["document"], options);
+       } else {
+         let response = false;
+       }
+     }
+
+     if(this->type == "getdocument") {
+       let body = response->toArray();
+       let options = this->getCursorOptions();
+       let options["_isNew"] = false;
+       let response = {documentClass}::createFromArray(body, options);
+     }
+
+     if(this->type == "document") {
+       let body = response->toArray();
+       if(!isset(body["error"]) || body["error"] == false) {
+         var id;
+         let id = body[Document::ENTRY_ID];
+         let response = id;
+       }
+     }
+
+     if(this->type == "getedge") {
+       let body = response->toArray();
+       let options = this->getCursorOptions();
+       let options["_isNew"] = false;
+       let response = Edge::createFromArray(body, options);
+     }
+
+     if(this->type == "edge") {
+       // Verify response type
+       let body = response->toArray();
+       if(!isset(body["error"]) || body["error"] == false) {
+         var id;
+         let id = body[Edge::ENTRY_ID];
+         let response = id;
+       }
+     }
+
+     if(this->type == "getedges") {
+       let body = response->toArray();
+       let options = this->getCursorOptions();
+       let options["_isNew"] = false;
+       let response = [];
+
+       var data;
+       for _, data in body[EdgeHandler::ENTRY_EDGES] {
+         let response[] = Edge::createFromArray(data, options);
+       }
+     }
+
+     return response;
    }
 }
