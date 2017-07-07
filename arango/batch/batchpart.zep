@@ -3,6 +3,7 @@ namespace Arango\Batch;
 
 use Arango\Batch\Batch;
 use Arango\Cursor\Cursor;
+use Arango\Exception\ClientException;
 
 /**
  * Provides batch part functionality
@@ -125,5 +126,27 @@ class BatchPart {
     */
    public function getBatch() -> <Batch> {
      return this->batch;
+   }
+
+   /**
+    * Gets the HTTP code for the current batch part
+    *
+    * @return int | null
+    */
+   public function getHttpCode() -> int | null {
+     return this->getResponse()->getHttpCode();
+   }
+
+   /**
+    * Get the batch part identified by the array key (0...n)
+    * or its id if it was set with nextBatchPartId($id)
+    *
+    * @throws \Arango\Exception\ClientException
+    *
+    * @return mixed
+    */
+   public function getProcessedResponse()
+   {
+     return null;
    }
 }
