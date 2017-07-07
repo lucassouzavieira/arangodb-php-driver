@@ -3,6 +3,7 @@ namespace Arango\Batch;
 
 use Arango\Http\Response;
 use Arango\Http\Client;
+use Arango\Http\Url;
 use Arango\Connection\Connection;
 use Arango\Exception\ClientException;
 use Arango\Cursor\Cursor;
