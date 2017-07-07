@@ -2,58 +2,107 @@
 namespace Arango\Http;
 
 /**
- * URL Helper to Arango HTTP Interface
+ * Url Helper class
+ *
  * @package Arango/Http
  * @class Url
+ * @abstract
  * @author Lucas S. Vieira
  */
 abstract class Url {
-  const DOCUMENT = "/_api/document";
-  const EDGE = "/_api/document";
-  const EDGES = "/_api/edges";
-  const GRAPH = "/_api/gharial";
-  const COLLECTION = "/_api/collection";
-  const INDEX = "/_api/index";
-  const CURSOR = "/_api/cursor";
-  const IMPORT = "/_api/import";
-  const EXPORT = "/_api/export";
-  const EXPLAIN = "/_api/explain";
-  const BATCH = "/_api/batch";
-  const QUERY = "/_api/query";
-  const TRANSACTION = "/_api/transaction";
-  const AQL_USER_FUNCTION = "/_api/aqlfunction";
 
-  const USER = "/_api/user";
-  const TRAVERSAL = "/_api/traversal";
-  const ENDPOINT = "/_api/endpoint";
-  const DATABASE = "/_api/database";
-  const QUERY_CACHE = "/_api/query-cache";
-  const UPLOAD = "/_api/upload";
+  /**
+   * Get the document Id from a location header
+   *
+   * @param string location - HTTP response location header
+   *
+   * @return string | null - Document id parsed or null if location is not valid
+   */
+  public static function getDocumentIdFromLocation(string location) -> string | null {
+    var parts, collection, id;
+    let parts = explode("/", location);
 
-  const PART_VERTEX = "vertex";
-  const PART_EDGE   = "vertex";
+    if(strpos(location, "/_db/") == 0) {
+      // The location is something like /_db/<dbname>/_api/document/<collection>/<key>
+      if(isset(parts[4]) && isset(parts[5])){
+        let collection = parts[4];
+        let id = parts[5];
+      }
+    }
 
+    if(strpos(location, "/_api/") == 0) {
+      // Then, the location is something like /_api/document/<collection>/<key>
+      if(isset(parts[2]) && isset(parts[3])){
+        let collection = parts[2];
+        let id = parts[3];
+      }
+    }
 
-  const LOOKUP_BY_KEYS = "/_api/simple/lookup-by_keys";
-  const ALL = "/_api/simple/all";
-  const ALL_KEYS = "/_api/simple/all";
-  const ANY = "/_api/simple/any";
-  const FULLTEXT = "/_api/simple/fulltext";
-  const REMOVE_BY_KEYS = "/_api/simple/remove-by-keys";
+    if(!is_null(collection) && !is_null(id)) {
+      if(is_string(id)){
+        let id = urldecode(id);
+      }
 
-  const EXAMPLE = "/_api/simple/by-example";
-  const FIRST_EXAMPLE = "/_api/simple/first-example";
-  const UPDATE_BY_EXAMPLE = "/_api/simple/update-by-example";
-  const REMOVE_BY_EXAMPLE = "/_api/simple/remove-by-example";
-  const REPLACE_BY_EXAMPLE = "/_api/simple/replace-by-example";
+      return collection . "/" . id;
+    }
 
-  const ADMIN_VERSION = "/_admin/version";
-  const ADMIN_SERVER_ROLE = "/_admin/server/role";
-  const ADMIN_TIME = "/_admin/time";
-  const ADMIN_LOG = "/_admin/log";
-  const ADMIN_ROUTING_RELOAD = "/_admin/routing/reload";
-  const ADMIN_STATISTICS = "/_admin/statistics";
-  const ADMIN_STATISTICS_DESCRIPTION = "/_admin/statistics-description";
-  const FOXX_INSTALL = "/_admin/foxx/install";
-  const FOXX_UNINSTALL = "/_admin/foxx/uninstall";
+    return null;
+  }
+
+  /**
+   * Construct a URL from a base URL and additional parts, separated with "/" each
+   *
+   * @param string url  - Base URL
+   * @param array parts - URL parts to append
+   *
+   * @return string     - Assembled URL
+   */
+  public static function buildUrl(string url, array parts = []) -> string {
+    var baseUrl;
+
+    let baseUrl = url;
+
+    var part;
+    for _, part in parts {
+      if(strpos(part, "/") != false){
+        let part = explode("/", part);
+      }
+
+      let baseUrl = baseUrl . "/" . urlencode(part);
+    }
+
+    return baseUrl;
+  }
+
+  /**
+   * Append parameters to a URL.
+   * Parameters values will be URL-encoded
+   *
+   * @param string url    - Base URL
+   * @param array params  - An array of parameters
+   *
+   * @return string
+   */
+  public static function appendParamsToUrl(string url, array params) -> string {
+    var key, value;
+
+    for key, value in params {
+      if(is_bool(value)){
+        let value = self::getBoolString(value);
+      }
+    }
+
+    return url . "?" . http_build_query(params);
+  }
+
+  /**
+   * Get a boolean string from an value
+   *
+   * @param mixed value
+   *
+   * @return string - "true" if value evaluates to true, "false" otherwise
+   */
+  private static function getBoolString(value) -> string {
+    return value ? "true" : "false";
+  }
 }

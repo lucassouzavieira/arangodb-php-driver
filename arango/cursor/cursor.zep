@@ -2,7 +2,7 @@
 namespace Arango\Cursor;
 
 use Arango\Connection\Connection;
-use Arango\Http\Url;
+use Arango\Http\Api;
 use Arango\Document\Document;
 use Arango\Document\Edge;
 use Arango\Document\Vertex;
@@ -515,7 +515,7 @@ class Cursor implements \Iterator {
       return this->options[self::ENTRY_BASE_URL];
     }
 
-    return Url::CURSOR;
+    return Api::CURSOR;
   }
 
   /**

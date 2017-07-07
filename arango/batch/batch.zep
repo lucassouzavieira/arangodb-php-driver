@@ -356,7 +356,7 @@ class Batch {
    *
    * @return \Arango\Http\Response | \Arango\Batch\Batch
    */
-  public function process() -> <Response> | <Batch> {
+  public function process() -> void {
     var data, batchParts, combinedDataHeader;
 
     if(this->isCapturing()) {
@@ -392,5 +392,7 @@ class Batch {
     }
 
     let data = data . "--" . Client::MIME_BOUNDARY . "--" . Client::SEPARATOR;
+
+    var params, url;
   }
 }
