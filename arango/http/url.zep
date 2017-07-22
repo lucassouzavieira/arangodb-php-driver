@@ -84,9 +84,9 @@ abstract class Url {
    * @return string
    */
   public static function appendParamsToUrl(string url, array params) -> string {
-    var key, value;
+    var value;
 
-    for key, value in params {
+    for _, value in params {
       if(is_bool(value)){
         let value = self::getBoolString(value);
       }

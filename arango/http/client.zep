@@ -62,7 +62,7 @@ abstract class Client {
    * @param string method - method name
    * @return boolean - always true - throw an exception if method is not valid
    */
-  public static function validateMethod(string method) {
+  public static function validateMethod(string method) -> boolean {
     array methods;
 
     let methods = [
@@ -196,6 +196,7 @@ abstract class Client {
      array customHeaders) -> string {
        var lenght, contentType, customHeader, request;
 
+       Client::validateMethod(method);
        let lenght = strlen(body);
 
        let contentType = "Content-Type: multipart/form-data; boundary=" . self::MIME_BOUNDARY . self::EOL;

@@ -94,9 +94,6 @@ class BatchPart {
     * @return void
     */
    public function __construct(<Batch> batch, id, type, string request, string response, array options = []) {
-     var sanitize;
-
-     let sanitize = false;
      let options = array_merge(options, this->getCursorOptions());
 
      if(isset(options["_documentClass"])){
@@ -109,6 +106,8 @@ class BatchPart {
      this->setRequest(request);
      this->setResponse(response);
 
+     let this->cursorOptions[Cursor::ENTRY_SANITIZE] = false;
+     
      if(isset(options["sanitize"])){
        let this->cursorOptions[Cursor::ENTRY_SANITIZE] = options["sanitize"];
      }

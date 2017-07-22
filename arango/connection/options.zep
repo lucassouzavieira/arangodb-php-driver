@@ -1,8 +1,9 @@
 
 namespace Arango\Connection;
 
-use Arango\Exception\ClientException;
+use Arango\Connection\Endpoint;
 use Arango\Policies\UpdatePolicy;
+use Arango\Exception\ClientException;
 
 /**
  * Options class
@@ -186,6 +187,74 @@ class Options implements \ArrayAccess {
   private endpoint;
 
   /**
+   * Set defaults, use options provided by client and validate them
+   *
+   * @param array $options - initial options
+   *
+   * @throws Arango\Exception\ClientException
+   */
+  public function __construct(array options) {
+    let this->values = array_merge(self::getDefaults(), options);
+    this->validate();
+  }
+
+  /**
+   * Get the default values for the options
+   *
+   * @return array
+   */
+  public static function getDefaults() -> array {
+    return [
+      self::ENDPOINT : null,
+      self::HOST : null,
+      self::PORT : 8529,
+      self::TIMEOUT : 30,
+      self::CREATE : false,
+      self::UPDATE_POLICY : UpdatePolicy::ERROR,
+      self::REPLACE_POLICY : UpdatePolicy::ERROR,
+      self::DELETE_POLICY : UpdatePolicy::ERROR,
+      self::REVISION : null,
+      self::WAIT_SYNC : false,
+      self::BATCHSIZE : null,
+      self::JOURNAL_SIZE : 33554432,
+      self::IS_SYSTEM : null,
+      self::IS_VOLATILE : false,
+      self::CONNECTION : "Keep-Alive",
+      self::TRACE : null,
+      self::ENHANCED_TRACE : false,
+      self::VERIFY_CERT : false,
+      self::ALLOW_SELF_SIGNED : true,
+      self::CIPHERS : null,
+      self::AUTH_USER : null,
+      self::AUTH_TYPE : "Basic",
+      self::AUTH_PASSWD : null,
+      self::RECONNECT : null,
+      self::BATCH : null,
+      self::BATCHPART : null,
+      self::DATABASE : null,
+      self::CHECK_UTF8_CONFORM : false
+    ];
+  }
+
+  /**
+   * Return the supported auth types
+   *
+   * @return array
+   */
+  private static function getSupportedAuthTypes() -> array {
+    return ["Basic"];
+  }
+
+  /**
+   * Return the supported connection types
+   *
+   * @return array
+   */
+  private static function getSupportedConnectionsTypes() -> array {
+    return ["Close", "Keep-Alive"];
+  }
+
+  /**
    * Check if an option exists
    *
    * @param string offset
@@ -206,6 +275,8 @@ class Options implements \ArrayAccess {
     if(!array_key_exists(offset, this->values)){
       throw new ClientException("Invalid option: " . offset);
     }
+
+    return this->values[offset];
   }
 
   /**
@@ -238,7 +309,45 @@ class Options implements \ArrayAccess {
    * @return void
    */
   private function validate() -> void {
+    if(isset(this->values[self::HOST]) && !is_string(this->values[self::HOST])) {
+      throw new ClientException("Host should be a string");
+    }
 
+    if(isset(this->values[self::PORT]) && !is_int(this->values[self::PORT])) {
+      throw new ClientException("Host should be an integer");
+    }
+
+    if(isset(this->values[self::HOST]) && !is_string(this->values[self::HOST])) {
+      throw new ClientException("Host should be a string");
+    }
+
+    if(isset(this->values[self::HOST]) && !is_null(this->values[self::ENDPOINT])) {
+      throw new ClientException("Must not specify both Host and Endpoint");
+    }
+
+    let this->values[self::ENDPOINT] = "tcp://" .
+            this->values[self::HOST] . ":" . this->values[self::PORT];
+    unset(this->values[self::HOST]);
+
+    var type;
+    let type = Endpoint::getType(this->values[self::ENDPOINT]);
+
+    if(type == Endpoint::TYPE_UNIX || type == Endpoint::TYPE_SSL) {
+      let this->values[self::PORT] = 0;
+    }
+
+    if(isset(this->values[self::AUTH_TYPE]) &&
+        !in_array(this->values[self::AUTH_TYPE], self::getSupportedAuthTypes())) {
+      throw new ClientException("Unsupported authorization method");
+    }
+
+    if(isset(this->values[self::CONNECTION]) &&
+        !in_array(this->values[self::CONNECTION], self::getSupportedConnectionsTypes())) {
+      throw new ClientException("Unsupported connection value");
+    }
+
+    UpdatePolicy::validate(this->values[self::UPDATE_POLICY]);
+    UpdatePolicy::validate(this->values[self::REPLACE_POLICY]);
+    UpdatePolicy::validate(this->values[self::DELETE_POLICY]);
   }
-
 }
