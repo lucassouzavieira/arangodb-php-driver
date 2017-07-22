@@ -2,8 +2,9 @@
 namespace Arango\Connection;
 
 use Arango\Http\Client;
-use Arango\Http\Request;
 use Arango\Batch\Batch;
+use Arango\Http\Request;
+use Arango\Http\Response;
 use Arango\Batch\BatchPart;
 use Arango\Connection\Options;
 use Arango\Connection\Encoding;
@@ -111,8 +112,13 @@ class Connection extends Request {
    */
   public function __construct(array options){
     let this->options = new Options(options);
-    let this->useKeepAlive = (this->options[Options::CONNECTION] == "Keep-alive");
-    this->setDatabase(this->options[Options::DATABASE]);
+    let this->useKeepAlive = false;
+
+    if(this->options->offsetGet(Options::CONNECTION) == "Keep-Alive") {
+      let this->useKeepAlive = true;
+    }
+
+    this->setDatabase(this->options->offsetGet(Options::DATABASE));
     this->updateHttpHeader();
   }
 
@@ -225,7 +231,7 @@ class Connection extends Request {
    * @return void
    */
   public function setDatabase(string database) -> void {
-    let this->options[Options::DATABASE] = database;
+    this->options->offsetSet(Options::DATABASE, database);
     let this->database = database;
     this->updateHttpHeader();
   }
@@ -248,34 +254,34 @@ class Connection extends Request {
      var endpoint;
 
      let this->httpHeader = Client::EOL;
-     let endpoint = this->options[Options::ENDPOINT];
+     let endpoint = this->options->offsetGet(Options::ENDPOINT);
 
      if(Endpoint::getType(endpoint) != Endpoint::TYPE_UNIX){
        let this->httpHeader = this->httpHeader . sprintf("Host: %s%s", Endpoint::getHost(endpoint), Client::EOL);
      }
 
-     if(isset(this->options[Options::AUTH_TYPE]) && isset(this->options[Options::AUTH_USER])){
+     if(this->options->offsetExists(Options::AUTH_TYPE) && this->options->offsetExists(Options::AUTH_USER)){
        /* Add autorization header */
        var authorization;
 
        let authorization = base64_encode(
-         this->options[Options::AUTH_USER] . ":",
-         this->options[Options::AUTH_PASSWD]
+         this->options->offsetGet(Options::AUTH_USER) . ":",
+         this->options->offsetGet(Options::AUTH_PASSWD)
        );
 
        let this->httpHeader = this->httpHeader . sprintf(
          "Authorization: %s %s%s",
-         this->options[Options::AUTH_TYPE],
+         this->options->offsetGet(Options::AUTH_TYPE),
          authorization,
          Client::EOL
        );
      }
 
-     if(isset(this->options[Options::CONNECTION])){
+     if(this->options->offsetExists(Options::CONNECTION)){
        /* Add connection header */
        let this->httpHeader = this->httpHeader . sprintf(
          "Connection: %s%s",
-         this->options[Options::CONNECTION],
+         this->options->offsetGet(Options::CONNECTION),
          Client::EOL
        );
      }
@@ -348,12 +354,14 @@ class Connection extends Request {
      var request, handle, response;
 
      if(this->httpHeader == "") {
-       throw new \Exception("Invalid http header");
+       throw new \Exception("Invalid HTTP header");
      }
 
      if(isset(customHeaders[Client::ASYNC_HEADER])) {
        let wasAsync = true;
      }
+
+     Client::validateMethod(method);
 
      if (this->batchRequest == false) {
        if(this->captureBatch == true) {
@@ -381,22 +389,69 @@ class Connection extends Request {
        this->options->offsetSet(Options::BATCHPART, false);
      }
 
+     /* traceFunc is a callback defined by user.
+        If is defined, should be called in each communication with server */
      var traceFunc;
      let traceFunc = this->options[Options::TRACE];
 
      if(traceFunc) {
        if(this->options[Options::ENHANCED_TRACE]) {
          var header, headers;
+
          let header = Client::parseHttpMessage(request, url, method);
          let headers = Client::parseHttpHeaders(header);
-         //traceFunc(new TraceRequest(headers[2], method, url, data));
+         traceFunc(new TraceRequest(headers[2], method, url, data));
        } else {
-         //traceFunc("send", request);
+         traceFunc("send", request);
        }
      }
 
+     // Open the socket
      let handle = this->getHandle();
-     return response;
+
+     if(handle) {
+       var startTime, timeTaken, status, result;
+
+       if(traceFunc) {
+         let startTime = microtime(true);
+       }
+
+       let result = Client::transfer(handle, request, method);
+
+       if(traceFunc) {
+         let timeTaken = microtime(true) - startTime;
+       }
+
+       let status = socket_get_status(handle);
+
+       if(status["timed_out"]){
+         throw new ClientException("Got a timeout while waiting for the server\'s response", 408);
+       }
+
+       if(!this->useKeepAlive) {
+         fclose(handle);
+       }
+
+       let response = new Response(result, url, method, wasAsync);
+
+       if(traceFunc) {
+         // call traceFunc
+         if(this->options[Options::ENHANCED_TRACE]) {
+           traceFunc(new TraceResponse(
+             response->getHeaders(),
+             response->getCode(),
+             response->getBody(),
+             timeTaken
+           ));
+         } else {
+           traceFunc("receive", result);
+         }
+       }
+
+       return response;
+     }
+
+     throw new ClientException("Whoops, this should never happen");
    }
 
    /**
@@ -431,5 +486,25 @@ class Connection extends Request {
     */
    public function isInBatchCaptureMode() -> boolean {
      return this->captureBatch;
+   }
+
+   /**
+    * Stop capturing commands
+    *
+    * @return void
+    */
+   public function stopCaptureBatch() -> void {
+     let this->captureBatch = false;
+   }
+
+   /**
+    * Sets the batch capture state (true, if capturing)
+    *
+    * @param boolean state True to turn on capture batch mode, false to turn off
+    *
+    * @return void
+    */
+   public function setCaptureBatch(boolean state) -> void {
+     let this->captureBatch = state;
    }
 }

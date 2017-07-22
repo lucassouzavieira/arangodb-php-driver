@@ -325,9 +325,11 @@ class Options implements \ArrayAccess {
       throw new ClientException("Must not specify both Host and Endpoint");
     }
 
-    let this->values[self::ENDPOINT] = "tcp://" .
-            this->values[self::HOST] . ":" . this->values[self::PORT];
-    unset(this->values[self::HOST]);
+    if(isset(this->values[self::HOST]) || !isset(this->values[self::ENDPOINT])) {
+      let this->values[self::ENDPOINT] = "tcp://" .
+              this->values[self::HOST] . ":" . this->values[self::PORT];
+      unset(this->values[self::HOST]);
+    }
 
     var type;
     let type = Endpoint::getType(this->values[self::ENDPOINT]);
