@@ -1,11 +1,11 @@
 
 namespace Arango\Cursor;
 
-use Arango\Connection\Connection;
 use Arango\Http\Api;
-use Arango\Document\Document;
 use Arango\Document\Edge;
 use Arango\Document\Vertex;
+use Arango\Document\Document;
+use Arango\Connection\Connection;
 use Arango\Exception\ClientException;
 
 /**

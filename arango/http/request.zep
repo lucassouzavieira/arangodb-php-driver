@@ -1,8 +1,8 @@
 
 namespace Arango\Http;
 
-use Arango\Http\Response;
 use Arango\Http\Client;
+use Arango\Http\Response;
 use Arango\Exception\ServerException;
 
 /**

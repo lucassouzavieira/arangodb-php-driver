@@ -2,8 +2,8 @@ namespace Arango\Http;
 
 use Arango\Connection\Options;
 use Arango\Connection\Endpoint;
-use Arango\Exception\ConnectException;
 use Arango\Exception\ClientException;
+use Arango\Exception\ConnectException;
 
 /**
  * Client to Arango PHP Driver

@@ -1,7 +1,8 @@
 namespace Arango\Connection;
 
-use Arango\Exception\ClientException;
+use Arango\Http\Api;
 use Arango\Connection\Connection;
+use Arango\Exception\ClientException;
 
 /**
  * Endpoint class
@@ -152,13 +153,15 @@ class Endpoint {
    *
    * This will list the endpoints that are configured on the server
    *
-   * TODO implements
    * @throws \Arango\Exception\ClientException
    * @link https://docs.Arango.com/devel/Manual/Administration/Configuration/Endpoint.html
    * @param Connection connection - the connection to be used
    * @return array
    */
-  public function listEndpoints(<Connection> connection){
+  public function listEndpoints(<Connection> connection) -> array {
+    var response;
 
+    let response = connection->get(Api::ENDPOINT);
+    return response->toArray();
   }
 }
