@@ -1,12 +1,13 @@
 
 namespace Arango\Batch;
 
-use Arango\Http\Response;
-use Arango\Http\Client;
+use Arango\Http\Api;
 use Arango\Http\Url;
+use Arango\Http\Client;
+use Arango\Http\Response;
+use Arango\Cursor\Cursor;
 use Arango\Connection\Connection;
 use Arango\Exception\ClientException;
-use Arango\Cursor\Cursor;
 
 /**
  * Provides batching functionality
@@ -350,14 +351,12 @@ class Batch {
    * A successful process just means that tha parts were processed.
    * Each part has it's own response though and should be checked on its own.
    *
-   * TODO implements
-   *
    * @throws \Arango\Exception\ClientException
    * @throws \Arango\Exception\Exception
    *
    * @return \Arango\Http\Response | \Arango\Batch\Batch
    */
-  public function process() -> void {
+  public function process() -> <Response> | <Batch> {
     var data, batchParts, combinedDataHeader;
 
     if(this->isCapturing()) {
@@ -395,5 +394,48 @@ class Batch {
     let data = data . "--" . Client::MIME_BOUNDARY . "--" . Client::SEPARATOR;
 
     var params, url;
+    let params = [];
+    let url = Url::appendParamsToUrl(Api::BATCH, params);
+    let this->batchResponse = this->connection->post(url, data);
+
+    if(this->batchResponse->getCode() != 200) {
+      return this->batchResponse;
+    }
+
+    var body;
+
+    let body = this->batchResponse->getBody();
+    let body = trim(body, "--" . Client::MIME_BOUNDARY . "--");
+    let batchParts = this->splitWithContentIdKey("--" . Client::MIME_BOUNDARY . Client::EOL, body);
+
+    var key, value;
+    for key, value in batchParts {
+      var response, batchPartsResponses;
+
+      let response = new Response(value);
+      let body = response->getBody();
+      let batchPartsResponses[key] = response;
+      this->getPart(key)->setResponse(batchPartsResponses[key]);
+    }
+
+    return this;
+  }
+
+  /**
+   * Get the batch part identified by array key
+   * or its ID (if it was set with nextBatchPartId($id))
+   *
+   * @throws \Arango\Exception\ClientException
+   *
+   * @param mixed partId The batch part ID
+   *
+   * @return batchPart
+   */
+  public function getPart(partId) -> <BatchPart> {
+    if(isset(this->batchParts[partId])) {
+      return this->batchParts[partId];
+    }
+
+    throw new ClientException("Request batch part does not exist.");
   }
 }

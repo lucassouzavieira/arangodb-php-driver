@@ -427,6 +427,18 @@ class Document implements \JsonSerializable, \Serializable {
   }
 
   /**
+   * Returns an array representation for document
+   *
+   * @return array
+   */
+  public function toArray() -> array {
+    return this->getAll([
+      "_includeInternals": false,
+      "_ignoreHiddenAttributes": true
+    ]);
+  }
+
+  /**
    * Serialize instance
    *
    * @return string
