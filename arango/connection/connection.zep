@@ -8,6 +8,8 @@ use Arango\Http\Response;
 use Arango\Batch\BatchPart;
 use Arango\Connection\Options;
 use Arango\Connection\Encoding;
+use Arango\Connection\TraceRequest;
+use Arango\Connection\TraceResponse;
 use Arango\Exception\ClientException;
 use Arango\Exception\ConnectException;
 
