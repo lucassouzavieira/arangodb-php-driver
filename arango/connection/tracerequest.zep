@@ -58,7 +58,7 @@ class TraceRequest {
   };
 
   /**
-   * Set up the
+   * Set up the Trace
    *
    * @param array headers     - array with HTTP headers
    * @param string method     - HTTP method
