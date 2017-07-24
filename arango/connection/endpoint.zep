@@ -1,6 +1,7 @@
 namespace Arango\Connection;
 
 use Arango\Http\Api;
+use Arango\Http\Response;
 use Arango\Connection\Connection;
 use Arango\Exception\ClientException;
 

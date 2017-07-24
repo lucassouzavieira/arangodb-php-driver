@@ -24,7 +24,7 @@ abstract class Request implements RequestInterface {
    *
    * @return Response
    */
-  public function get(string url, array customHeaders = []) -> <Request> {
+  public function get(string url, array customHeaders = []) -> <Response> {
     var response;
 
     let response = this->executeRequest(Client::GET, url, "", customHeaders);
@@ -41,7 +41,7 @@ abstract class Request implements RequestInterface {
    *
    * @return Response
    */
-  public function post(string url, array customHeaders = []) -> <Request> {
+  public function post(string url, array customHeaders = []) -> <Response> {
     var response;
 
     let response = this->executeRequest(Client::POST, url, "", customHeaders);
@@ -58,7 +58,7 @@ abstract class Request implements RequestInterface {
    *
    * @return Response
    */
-  public function put(string url, array customHeaders = []) -> <Request> {
+  public function put(string url, array customHeaders = []) -> <Response> {
     var response;
 
     let response = this->executeRequest(Client::PUT, url, "", customHeaders);
@@ -75,7 +75,7 @@ abstract class Request implements RequestInterface {
    *
    * @return Response
    */
-  public function head(string url, array customHeaders = []) -> <Request> {
+  public function head(string url, array customHeaders = []) -> <Response> {
     var response;
 
     let response = this->executeRequest(Client::HEAD, url, "", customHeaders);
@@ -92,7 +92,7 @@ abstract class Request implements RequestInterface {
    *
    * @return Response
    */
-  public function patch(string url, array customHeaders = []) -> <Request> {
+  public function patch(string url, array customHeaders = []) -> <Response> {
     var response;
 
     let response = this->executeRequest(Client::PATCH, url, "", customHeaders);
@@ -109,7 +109,7 @@ abstract class Request implements RequestInterface {
    *
    * @return Response
    */
-  public function delete(string url, array customHeaders = []) -> <Request> {
+  public function delete(string url, array customHeaders = []) -> <Response> {
     var response;
 
     let response = this->executeRequest(Client::DELETE, url, "", customHeaders);
