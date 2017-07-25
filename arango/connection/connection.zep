@@ -340,8 +340,6 @@ class Connection extends Request {
     * This function will throw if no connection to the server can be established or if
     * there is a problem during data exchange with the server.
     *
-    * TODO revision
-    *
     * @throws \Exception
     *
     * @param string method       - HTTP request method

@@ -68,5 +68,31 @@ abstract class Encoding {
       }
     }
   }
-  
+
+  /**
+   * This is a json_encode() wrapper that also checks if the data is utf-8 conform.
+   * internally it calls the check_encoding() method. If that method does not throw
+   * an Exception, this method will happily return the json_encoded data.
+   *
+   * @throws Arango\Exception\ClientException
+   *
+   * @param array $data    the data to encode
+   * @param mixed $options the options for the json_encode() call
+   *
+   * @return string the result of the json_encode
+   */
+  public static function jsonWrapper(array data, options = 0) -> string {
+    self::checkEncoding(data);
+
+    var response;
+
+    if(empty(data)) {
+      let response = json_encode(data, options | JSON_FORCE_OBJECT);
+
+      return response;
+    }
+
+    let response = json_encode(data, options);
+    return response;
+  }
 }
