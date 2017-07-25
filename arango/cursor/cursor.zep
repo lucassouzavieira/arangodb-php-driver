@@ -366,7 +366,7 @@ class Cursor implements \Iterator {
    *
    * @return void
    */
-  private function addEdgeFromArray(array data) -> void {
+  private function addEdgesFromArray(array data) -> void {
     let this->result[] = Edge::createFromArray(data, this->options);
   }
 
@@ -386,19 +386,17 @@ class Cursor implements \Iterator {
   /**
    * Fetch outstanding results from the server
    *
-   * TODO revision
-   *
    * @throws \Exception
    * @return void
    */
-  public function fetchOutstanding() -> void {
+  private function fetchOutstanding() -> void {
     var response, data;
 
-    // let response = this->connection->put(this->url() . "/" . this->id, "", []);
+    let response = this->connection->put(this->url() . "/" . this->id, "", []);
     let this->fetches = this->fetches + 1;
-    // let data = response->getJson();
+    let data = response->getJson();
     let this->hasMore = (boolean) data[self::ENTRY_HAS_MORE];
-    // this->add(data[self::ENTRY_RESULT]);
+    this->add(data[self::ENTRY_RESULT]);
 
     if(!this->hasMore) {
       // We have fetched the complete result set and can unset id now
@@ -516,6 +514,59 @@ class Cursor implements \Iterator {
     }
 
     return Api::CURSOR;
+  }
+
+  /**
+   * Create an array of results from the input array
+   *
+   * @param array data - incoming results
+   *
+   * @return int
+   */
+  private function add(array data) -> void {
+    var row;
+
+    for _, row in this->sanitize(data) {
+      if(!is_array(row) || (isset(this->options[self::ENTRY_FLAT]) && this->options[self::ENTRY_FLAT])){
+        this->addFlatFromArray(row);
+        continue;
+      }
+
+      if(!isset(this->options["objectType"])){
+        this->addDocumentsFromArray(row);
+        continue;
+      }
+
+      switch (this->options["objectType"]) {
+        case "edge":
+          this->addEdgesFromArray(row);
+          break;
+        case "vertex":
+          this->addVerticesFromArray(row);
+          break;
+        case "path":
+          this->addPathsFromArray(row);
+          break;
+        case "shortestPath":
+          this->addShortestPathFromArray(row);
+          break;
+        case "distanceTo":
+          this->addDistanceToFromArray(row);
+          break;
+        case "commonNeighbors":
+          this->addCommonNeighborsFromArray(row);
+          break;
+        case "commonProperties":
+          this->addCommonPropertiesFromArray(row);
+          break;
+        case "figure":
+          this->addFigureFromArray(row);
+          break;
+        default:
+          this->addDocumentsFromArray(row);
+          break;
+      }
+    }
   }
 
   /**

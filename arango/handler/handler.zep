@@ -1,14 +1,14 @@
 
 namespace Arango\Handler;
 
+use Arango\Document\Document;
 use Arango\Connection\Encoding;
 use Arango\Connection\Connection;
 use Arango\Collection\Collection;
-use Arango\Document\Document;
 
 /**
  * A base class for REST-based handlers
- * TODO all
+ *
  * @package Arango/Handler
  * @class Handler
  * @author Lucas S. Vieira
