@@ -1,6 +1,15 @@
 
 namespace Arango\Handler;
 
+use Arango\Http\Api;
+use Arango\Http\Url;
+use Arango\Http\Response;
+use Arango\Connection\Options;
+use Arango\Connection\Encoding;
+use Arango\Connection\Connection;
+use Arango\Collection\Collection;
+use Arango\Exception\ServerException;
+
 /**
  * A handler that manages edges
  *
@@ -54,4 +63,172 @@ class CollectionHandler extends Handler {
   const OPTION_TRUNCATE = "truncate";
   const OPTION_RENAME = "rename";
   const OPTION_EXCLUDE_SYSTEM = "excludeSystem";
-}
+
+
+  /**
+   * Creates a new collection on the server
+   *
+   * This will add the collection on the server and return its id
+   * The id is mainly returned for backwards compatibility, but you should use the collection name for any reference to the collection.   *
+   * This will throw if the collection cannot be created
+   *
+   * @throws Exception
+   *
+   * @param string $name       - A string with the collection name
+   * @param array $options     - An array of options.
+   *                          Options are :
+   *                          'type'            - 2 -> normal collection, 3 -> edge-collection
+   *                          'waitForSync'     -  if set to true, then all removal operations will instantly be synchronised to disk / If this is not specified, then the collection's default sync behavior will be applied.
+   *                          'journalSize'     -  journalSize value.
+   *                          'isSystem'        -  false->user collection(default), true->system collection .
+   *                          'isVolatile'      -  false->persistent collection(default), true->volatile (in-memory) collection .
+   *                          'numberOfShards'  -  number of shards for the collection.
+   *                          'shardKeys'       -  list of shard key attributes.
+   *
+   * @return mixed - id of collection created
+   */
+  public function create(string name, array options = []) -> int | string {
+    var collection, params;
+
+    let collection = new Collection(name);
+    collection->setName(name);
+
+    // Set defaults and options values to collection object
+    let collection = this->setCollectionDefaults(collection);
+    let collection = this->setCollectionValues(collection);
+
+    var type;
+
+    let type = collection->getType() ? : Collection::getDefaultType();
+
+    let params = [
+      Collection::ENTRY_NAME: collection->getName(),
+      Collection::ENTRY_TYPE: type,
+      Collection::ENTRY_WAIT_SYNC: collection->getWaitForSync(),
+      Collection::ENTRY_JOURNAL_SIZE: collection->getJournalSize(),
+      Collection::ENTRY_IS_SYSTEM: collection->getIsSystem(),
+      Collection::ENTRY_IS_VOLATILE: collection->getIsVolatile(),
+      Collection::ENTRY_KEY_OPTIONS: collection->getKeyOptions()
+    ];
+
+    // Set extra cluster attributes
+    if(collection->getNumberOfShards()){
+      let params[Collection::ENTRY_NUMBER_OF_SHARDS] = collection->getNumberOfShards();
+    }
+
+    if(is_array(collection->getShardKeys())){
+      let params[Collection::ENTRY_SHARD_KEYS] = collection->getShardKeys();
+    }
+
+    var response, data;
+    let response = this->getConnection()->post(Api::COLLECTION, Encoding::jsonWrapper(params));
+    let data = response->toArray();
+
+    collection->setId(data["id"]);
+    return data["id"];
+  }
+
+  /**
+   * Set defaults values for a collection object
+   *
+   * @param Collection collection - Collection object
+   *
+   * @return Collection
+   */
+  private function setCollectionDefaults(<Collection> collection) -> <Collection> {
+
+    collection->setType(Collection::getDefaultType());
+    collection->setWaitForSync(this->getConnectionOption(Options::WAIT_SYNC));
+    collection->setJournalSize(this->getConnectionOption(Options::JOURNAL_SIZE));
+    collection->setIsSystem(this->getConnectionOption(Options::IS_SYSTEM));
+    collection->setIsVolatile(this->getConnectionOption(Options::IS_VOLATILE));
+
+    return collection;
+  }
+
+  /**
+   * Set options values for a collection object
+   *
+   * @param Collection collection - Collection object
+   *
+   * @return Collection
+   */
+  private function setCollectionValues(<Collection> collection, array options = []) -> <Collection> {
+    if(isset(options["type"])) {
+      collection->setType(options["type"]);
+    }
+
+    if(isset(options["waitForSync"])) {
+      collection->setWaitForSync(options["waitForSync"]);
+    }
+
+    if(isset(options["journalSize"])) {
+      collection->setJournalSize(options["journalSize"]);
+    }
+
+    if(isset(options["isSystem"])) {
+      collection->setIsSystem(options["isSystem"]);
+    }
+
+    if(isset(options["isVolatile"])) {
+      collection->setIsVolatile(options["isVolatile"]);
+    }
+
+    if(isset(options["numberOfShards"])) {
+      collection->setNumberOfShards(options["numberOfShards"]);
+    }
+
+    if(isset(options["shardKeys"])) {
+      collection->setShardKeys(options["shardKeys"]);
+    }
+
+    return collection;
+  }
+
+  /**
+   * Check if a collection exists
+   *
+   * @throws Arango\Exception\ServerException | \Exception
+   *
+   * @param mixed collection - Collection ID as string or number
+   *
+   * @return boolean
+   */
+  public function has(collectionId) -> boolean {
+    var exception;
+
+    try {
+
+      this->retrieveFromServer(this->getCollectionName(collectionId));
+
+    } catch ServerException | \Exception, exception {
+
+      if(exception->getCode() == 404) {
+        return false;
+      }
+
+      throw exception;
+    }
+
+    return true;
+  }
+
+  /**
+   * Get collection from the server
+   *
+   * @throws \Exception
+   *
+   * @param mixed collectionId - Collection ID as string or number
+   *
+   * @return Collection
+   */
+  private function retrieveFromServer(collectionId) -> <Collection> {
+    var url, response;
+
+    let url = Url::buildUrl(Api::COLLECTION, [collectionId]);
+    let response = this->getConnection()->get(url);
+
+    return Collection::createFromArray(response->toArray());
+  }
+
+ }

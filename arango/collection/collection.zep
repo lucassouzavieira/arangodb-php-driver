@@ -429,7 +429,7 @@ class Collection implements \JsonSerializable {
    *
    * @return string
    */
-  public function getDefaultType(){
+  public static function getDefaultType(){
     return self::TYPE_DOCUMENT;
   }
 

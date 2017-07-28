@@ -81,6 +81,6 @@ abstract class Handler {
     }
 
     // Fallback is empty string
-    return "";
+    return value;
   }
 }
