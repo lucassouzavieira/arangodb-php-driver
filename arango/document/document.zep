@@ -128,14 +128,12 @@ class Document implements \JsonSerializable, \Serializable {
   /**
    * Get a string representation of the document
    *
-   * TODO Review
-   *
    * @magic
    *
    * @return string
    */
   public function __toString() -> string {
-    return json_encode(this->values);
+    return json_encode(this->getAll());
   }
 
   /**

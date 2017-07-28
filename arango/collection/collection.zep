@@ -462,7 +462,6 @@ class Collection implements \JsonSerializable {
   /**
    * Validate an array to create a new Collection
    *
-   * TODO Review mandatory attributes
    * @throws \Arango\Exception\ClientException
    * @param array values - array to validate
    * @return boolean

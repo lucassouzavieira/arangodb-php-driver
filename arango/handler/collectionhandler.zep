@@ -12,7 +12,7 @@ use Arango\Exception\ServerException;
 
 /**
  * A handler that manages collections
- *
+ * TODO Review
  * @package Arango/Handler
  * @class CollectionHandler
  * @author Lucas S. Vieira
@@ -368,4 +368,48 @@ class CollectionHandler extends Handler {
 
     return response->toArray();
   }
+
+  /**
+   * Get indexes of a collection
+   *
+   * @throws \Exception
+   *
+   * @param string collectionId - Collection ID as string or number
+   *
+   * @return array
+   */
+  public function getIndexes(collectionId) -> array {
+    var url, response;
+
+    let url = Url::buildUrl(Api::INDEX, [
+      self::OPTION_COLLECTION: this->getCollectionName(collectionId)
+    ]);
+
+    let response = this->getConnection()->get(url);
+
+    return response->toArray();
+  }
+
+  /**
+   * Drop an index
+   *
+   * @throws \Exception
+   *
+   * @param string collectionId - Collection ID as string
+   * @param string indexId      - Index ID as string
+   *
+   * @return boolean - always true, will throw an exception if an error
+   */
+  public function dropIndex(string collectionId, string indexId) -> boolean {
+    var url;
+
+    let url = Url::buildUrl(Api::INDEX, [
+      this->getCollectionName(collectionId),
+      indexId
+    ]);
+
+    this->getConnection()->delete(url);
+    return true;
+  }
+
  }
