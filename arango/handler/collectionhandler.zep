@@ -11,7 +11,7 @@ use Arango\Collection\Collection;
 use Arango\Exception\ServerException;
 
 /**
- * A handler that manages edges
+ * A handler that manages collections
  *
  * @package Arango/Handler
  * @class CollectionHandler
@@ -214,6 +214,52 @@ class CollectionHandler extends Handler {
   }
 
   /**
+   * Get the number of documents in a collection
+   *
+   * @throws \Exception
+   *
+   * @param mixed collectionId - Collection ID as string or number
+   *
+   * @return int
+   */
+  private function count(collectionId) -> int {
+    var url, response, data;
+
+    let url = Url::buildUrl(Api::COLLECTION, [
+      this->getCollectionName(collectionId),
+      self::OPTION_COUNT
+    ]);
+
+    let response = this->getConnection()->get(url);
+    let data = response->toArray();
+
+    return (int) data[self::OPTION_COUNT];
+  }
+
+  /**
+   * Get figures for a collection
+   *
+   * @throws \Exception
+   *
+   * @param mixed collectionId - Collection ID as string or number
+   *
+   * @return array
+   */
+  public function figures(collectionId) -> array {
+    var url, response, data;
+
+    let url = Url::buildUrl(Api::COLLECTION, [
+      this->getCollectionName(collectionId),
+      self::OPTION_FIGURES
+    ]);
+
+    let response = this->getConnection()->get(url);
+    let data = response->toArray();
+
+    return data[self::OPTION_FIGURES];
+  }
+
+  /**
    * Get collection from the server
    *
    * @throws \Exception
@@ -231,4 +277,95 @@ class CollectionHandler extends Handler {
     return Collection::createFromArray(response->toArray());
   }
 
+  /**
+   * Get collection properties from the server
+   *
+   * @throws \Exception
+   *
+   * @param mixed collectionId - Collection ID as string or number
+   *
+   * @return Collection
+   */
+  public function getProperties(collectionId) -> <Collection> {
+    var url, response;
+
+    let url = Url::buildUrl(Api::COLLECTION, [
+      this->getCollectionName(collectionId),
+      self::OPTION_PROPERTIES
+    ]);
+
+    let response = this->getConnection()->get(url);
+
+    return Collection::createFromArray(response->toArray());
+  }
+
+  /**
+   * Calculates a checksum of the collection
+   *
+   * @throws \Exception
+   *
+   * @param mixed collectionId    - Collection ID as string or number
+   * @param boolean withRevisions - Optional boolean wheter or not to include document revision ids in checksum calculation
+   * @param boolean withData      - Optional boolean wheter or not to include document body data ids in checksum calculation
+   *
+   * @return array  - Contains keys "checksum" and "revision"
+   */
+  public function getChecksum(collectionId, boolean withRevisions = false, boolean withData = false) -> <Collection> {
+    var url, response;
+
+    let url = Url::buildUrl(Api::COLLECTION, [
+      this->getCollectionName(collectionId),
+      self::OPTION_CHECKSUM
+    ]);
+
+    let url = Url::appendParamsToUrl(url, [
+      "withRevisions": withRevisions,
+      "withData": withData
+    ]);
+
+    let response = this->getConnection()->get(url);
+
+    return response->toArray();
+  }
+
+  /**
+   * Returns the collection revision ID
+   *
+   * @throws \Exception
+   *
+   * @param mixed collectionId - Collection ID as string or number
+   *
+   * @return array
+   */
+  public function getRevision(collectionId) -> array {
+    var url, response;
+
+    let url = Url::buildUrl(Api::COLLECTION, [
+      this->getCollectionName(collectionId),
+      self::OPTION_REVISION
+    ]);
+
+    let response = this->getConnection()->get(url);
+
+    return response->toArray();
+  }
+
+  /**
+   * Get the information about an index in a collection
+   *
+   * @throws \Exception
+   *
+   * @param string collectionId - Collection ID as string
+   * @param string indexId      - Index ID as string
+   *
+   * @return array
+   */
+  public function getIndex(string collectionId, string indexId) -> array {
+    var url, response;
+
+    let url = Url::buildUrl(Api::INDEX, [collectionId, indexId]);
+    let response = this->getConnection()->get(url);
+
+    return response->toArray();
+  }
  }

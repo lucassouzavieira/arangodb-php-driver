@@ -56,7 +56,7 @@
     "name": "Arango Driver",
     "description": "Arango PHP Driver",
     "author": "Lucas S. Vieira",
-    "version": "0.0.1-alpha",
+    "version": "0.0.2-alpha",
     "verbose": false,
     "requires": {
         "extensions": []
