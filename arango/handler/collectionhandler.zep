@@ -412,4 +412,17 @@ class CollectionHandler extends Handler {
     return true;
   }
 
+  /**
+   * Get a random document from the collection
+   *
+   * @throws \Exception - If document cannot be fetched from the server
+   *
+   * @param string collectionId - Collection ID as string
+   *
+   * @return Document
+   */
+  public function any(collectionId) -> void {
+
+  }
+
  }

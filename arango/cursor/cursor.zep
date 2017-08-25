@@ -176,7 +176,7 @@ class Cursor implements \Iterator {
     let this->result = [];
 
     // this->add((array) data[self::ENTRY_RESULT]);
-    this->updateLenght();
+    this->updateLength();
     this->rewind();
   }
 
@@ -403,7 +403,7 @@ class Cursor implements \Iterator {
       let this->id = null;
     }
 
-    this->updateLenght();
+    this->updateLength();
   }
 
 
@@ -499,7 +499,7 @@ class Cursor implements \Iterator {
    *
    * @return void
    */
-  private function updateLenght() -> void {
+  private function updateLength() -> void {
     let this->length = count(this->result);
   }
 
