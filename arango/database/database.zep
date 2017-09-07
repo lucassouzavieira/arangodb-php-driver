@@ -9,8 +9,6 @@ use Arango\Connection\Encoding;
 use Arango\Connection\Connection;
 
 /**
- * Database class
- *
  * Manage Arango databases through Arango's Database API
  *
  * @link https://docs.Arango.com/3.1/HTTP/Database/
@@ -33,8 +31,8 @@ abstract class Database {
    *
    * @link https://docs.arangodb.com/3.2/HTTP/Database/DatabaseManagement.html
    *
-   * @param Connection connection   - Connection to be used
-   * @param string name             - Database name
+   * @param Connection connection
+   * @param string name
    *
    * @return array - Database info
    */
@@ -62,10 +60,10 @@ abstract class Database {
    *
    * @link https://docs.arangodb.com/3.2/HTTP/Database/DatabaseManagement.html
    *
-   * @param Connection connection   - Connection to be used
-   * @param string name             - Database name
+   * @param Connection connection   
+   * @param string name
    *
-   * @return array - response array
+   * @return array
    */
   public static function delete(<Connection> connection, string name) -> array {
     var url, response;
@@ -83,9 +81,9 @@ abstract class Database {
    *
    * @link https://docs.arangodb.com/3.2/HTTP/Database/DatabaseManagement.html
    *
-   * @param Connection connection   - Connection to be used
+   * @param Connection connection
    *
-   * @return array - response array
+   * @return array
    */
   public static function list(<Connection> connection) -> array {
     var response;
@@ -101,9 +99,9 @@ abstract class Database {
    *
    * @link https://docs.arangodb.com/3.2/HTTP/Database/DatabaseManagement.html
    *
-   * @param Connection connection   - Connection to be used
+   * @param Connection connection
    *
-   * @return array - response array
+   * @return array
    */
   public static function listUserDatabases(<Connection> connection) -> array {
     var url, response;
@@ -120,9 +118,9 @@ abstract class Database {
    *
    * @link https://docs.arangodb.com/3.2/HTTP/Database/DatabaseManagement.html
    *
-   * @param Connection connection   - Connection to be used
+   * @param Connection connection
    *
-   * @return array - response array
+   * @return array
    */
   public static function info(<Connection> connection) -> array {
     var url, response;

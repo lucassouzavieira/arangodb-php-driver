@@ -13,7 +13,8 @@ interface PolicyInterface {
   /**
    * Validate an supplied policy value
    *
-   * @throws \Arango\Exception\ClientException if the value supplied is not valid
+   * @throws \Arango\Exception\ClientException
+   *
    * @return void
    */
   public static function validate(string value) -> void;

@@ -14,15 +14,13 @@ use Arango\Exception\ClientException;
 use Arango\Exception\ConnectionException;
 
 /**
- * Connection class
- *
- * Provides access to Arango server
+ * Provides access to Arango server <br>
  *
  * As all access is done using HTTP, we do not need to establish a
- * persistent connection and keep its state.
+ * persistent connection and keep its state. <br>
  *
  * Instead, connections are established on the fly for each request
- * and are destroyed afterwards.
+ * and are destroyed afterwards. <br>
  *
  * @package Arango\Connection
  * @class Connection

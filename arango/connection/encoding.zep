@@ -4,8 +4,6 @@ namespace Arango\Connection;
 use Arango\Exception\ClientException;
 
 /**
- * Encoding class
- *
  * Assists in checking and validating string encoding
  *
  * @package Arango\Connection

@@ -4,8 +4,6 @@ namespace Arango\Collection;
 use Arango\Exception\ClientException;
 
 /**
- * Collection class
- *
  * Represents a Collection in Arango Database
  *
  * @package Arango/Collection

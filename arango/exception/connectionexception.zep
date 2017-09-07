@@ -2,8 +2,6 @@
 namespace Arango\Exception;
 
 /**
- * ConnectionException class
- *
  * This exception type will be thrown by the client when there is an error
  *
  * @package Arango/Exception
