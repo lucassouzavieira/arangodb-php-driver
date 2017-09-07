@@ -11,7 +11,7 @@ use Arango\Connection\Encoding;
 use Arango\Connection\TraceRequest;
 use Arango\Connection\TraceResponse;
 use Arango\Exception\ClientException;
-use Arango\Exception\ConnectException;
+use Arango\Exception\ConnectionException;
 
 /**
  * Connection class
@@ -300,7 +300,7 @@ class Connection extends Request {
     *
     * If keep-alive connections are used, the handle will be stored and re-used
     *
-    * @throws \Arango\Exception\ConnectException | \Arango\Exception\ClientException
+    * @throws \Arango\Exception\ConnectionException | \Arango\Exception\ClientException
     * @return resource - connection handler
     */
    public function getHandle(){

@@ -4,7 +4,7 @@ namespace Arango\Http;
 use Arango\Connection\Options;
 use Arango\Connection\Endpoint;
 use Arango\Exception\ClientException;
-use Arango\Exception\ConnectException;
+use Arango\Exception\ConnectionException;
 
 /**
  * Client to Arango PHP Driver
@@ -135,7 +135,7 @@ abstract class Client {
    * Create a one-time HTTP connection by opening a socket to the server
    * It is the caller's responsibility to close the socket
    *
-   * @throws \Arango\Exception\ConnectException | \Exception
+   * @throws \Arango\Exception\ConnectionException | \Exception
    * @param Options options - Connection options
    * @return resource - socket with server connection
    */
@@ -168,7 +168,7 @@ abstract class Client {
      );
 
      if(!socketResource){
-       throw new ConnectException("Cannot connect to endpoint \ " . options[Options::ENDPOINT] . " \: " . message . error );
+       throw new ConnectionException("Cannot connect to endpoint \ " . options[Options::ENDPOINT] . " \: " . message . error );
      }
 
      stream_set_timeout(socketResource, Options::TIMEOUT);

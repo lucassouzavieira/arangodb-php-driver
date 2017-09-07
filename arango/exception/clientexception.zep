@@ -13,9 +13,11 @@ namespace Arango\Exception;
 class ClientException extends \Exception {
 
   /**
-   * TODO add class name
-   **/
-  public function __toString(){
-    return this->getMessage();
+   * Class where ClientException was thrown with Exception message.
+   *
+   * @return string
+   */
+  public function __toString() -> string {
+    return __CLASS__ . ": " . this->getMessage();
   }
 }

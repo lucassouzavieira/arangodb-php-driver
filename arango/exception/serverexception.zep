@@ -28,8 +28,13 @@ class ServerException extends \Exception {
   const ENTRY_MESSAGE = "errorMessage";
 
 
-  public function __toString(){
-    return "ServerException: " . this->getServerCode() . " " . this->getMessage();
+  /**
+   * Class where ServerException was thrown with Exception message.
+   *
+   * @return string
+   */
+  public function __toString() -> string {
+    return __CLASS__ . ": " . this->getServerCode() . " " . this->getMessage();
   }
 
 
