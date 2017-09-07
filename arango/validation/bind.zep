@@ -27,8 +27,8 @@ class Bind {
    *
    * @throws \Arango\Exception\ClientException
    *
-   * @param string key - name of bind variable
-   * @param mixed value - value for bind variable
+   * @param string key
+   * @param mixed value
    *
    * @return void
    */
@@ -40,7 +40,7 @@ class Bind {
   /**
    * Get the value of a bind variable with a specific name
    *
-   * @param string name - name of bind variable
+   * @param string name
    *
    * @return mixed
    */

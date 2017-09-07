@@ -2,6 +2,7 @@
 namespace Arango\Batch;
 
 use Arango\Batch\Batch;
+use Arango\Http\Response;
 use Arango\Cursor\Cursor;
 use Arango\Document\Edge;
 use Arango\Document\Document;
@@ -84,12 +85,12 @@ class BatchPart {
    /**
     * Constructor
     *
-    * @param Batch batch     - The batch object, that this part belongs to
-    * @param mixed id        - The Id of batch part. Must be unique.
-    * @param mixed type      - The type of request
-    * @param string request  - The request string
-    * @param string response - The response string
-    * @param array options   - options like sanitize can be passed to the request/response handler
+    * @param Batch batch
+    * @param mixed id
+    * @param mixed type
+    * @param string request
+    * @param string response
+    * @param array options
     *
     * @return void
     */
@@ -107,7 +108,7 @@ class BatchPart {
      this->setResponse(response);
 
      let this->cursorOptions[Cursor::ENTRY_SANITIZE] = false;
-     
+
      if(isset(options["sanitize"])){
        let this->cursorOptions[Cursor::ENTRY_SANITIZE] = options["sanitize"];
      }
@@ -139,7 +140,7 @@ class BatchPart {
     * @return int | null
     */
    public function getHttpCode() -> int | null {
-     return this->getResponse()->getHttpCode();
+     return this->getResponse()->getCode();
    }
 
    /**

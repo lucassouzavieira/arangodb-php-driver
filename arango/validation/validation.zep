@@ -18,7 +18,9 @@ abstract class Validation {
    * Arrays also are allowed if they contain only one of these types.
    *
    * @throw \Arango\Exception\ClientException if value is not valid
-   * @param mixed value - Value to validate
+   *
+   * @param mixed value
+   *
    * @return void
    */
   public static function validateValue(value) -> void {
