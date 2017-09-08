@@ -1,6 +1,8 @@
 
 namespace Arango\Exception;
 
+use Arango\Exception\Exception;
+
 /**
  * Thrown by client when there is error on server side
  *
@@ -8,7 +10,7 @@ namespace Arango\Exception;
  * @class ServerException
  * @author Lucas S. Vieira
  */
-class ServerException extends \Exception {
+class ServerException extends Exception {
 
   /**
    * Optional details for the exception

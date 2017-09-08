@@ -1,6 +1,8 @@
 
 namespace Arango\Exception;
 
+use Arango\Exception\Exception;
+
 /**
  * This exception type will be thrown by the client when there is an error
  *
@@ -8,7 +10,7 @@ namespace Arango\Exception;
  * @class ConnectionException
  * @author Lucas S. Vieira
  */
-class ConnectionException extends \Exception {
+class ConnectionException extends Exception {
 
   /**
    * Class where ConnectionException was thrown with Exception message.
