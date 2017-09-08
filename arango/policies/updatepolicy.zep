@@ -10,7 +10,7 @@ use Arango\Exception\ClientException;
  * @class UpdatePolicy
  * @author Lucas S. Vieira
  */
-class UpdatePolicy implements PolicyInterface {
+class UpdatePolicy implements Policy {
 
   /* Last update will win in case of conflicting versions*/
   const LAST = "last";

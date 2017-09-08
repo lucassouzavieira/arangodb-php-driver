@@ -8,7 +8,7 @@ namespace Arango\Policies;
  * @interface Policy
  * @author Lucas S. Vieira
  */
-interface PolicyInterface {
+interface Policy {
 
   /**
    * Validate an supplied policy value
