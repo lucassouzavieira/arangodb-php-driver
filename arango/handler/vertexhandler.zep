@@ -2,7 +2,6 @@
 namespace Arango\Handler;
 
 use Arango\Document\Vertex;
-use Arango\Document\Document;
 use Arango\Handler\DocumentHandler;
 
 /**
@@ -22,9 +21,9 @@ class VertexHandler extends DocumentHandler {
    * @param array $data
    * @param array $options
    *
-   * @return Arango\Document\Document
+   * @return Arango\Document\Vertex
    */
-  public function createFromArrayWithContext(array data, array options) -> <Document> {
+  public function createFromArrayWithContext(array data, array options) -> <Vertex> {
     return Vertex::createFromArray(data, options);
   }
 }
