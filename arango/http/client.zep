@@ -7,7 +7,7 @@ use Arango\Exception\ClientException;
 use Arango\Exception\ConnectionException;
 
 /**
- * Client to Arango PHP Driver
+ * HTTP Client to Arango PHP Driver
  *
  * @package Arango/Http
  * @abstract

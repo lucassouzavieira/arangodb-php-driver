@@ -6,8 +6,6 @@ use Arango\Policies\UpdatePolicy;
 use Arango\Exception\ClientException;
 
 /**
- * Options class
- *
  * Container to manage connection options
  *
  * @package Arango/Connection

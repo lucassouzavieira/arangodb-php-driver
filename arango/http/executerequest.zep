@@ -10,7 +10,7 @@ use Arango\Http\Response;
  * @interface Request
  * @author Lucas S. Vieira
  */
-interface RequestInterface {
+interface ExecuteRequest {
 
   /**
    * Execute an HTTP request and return the results

@@ -2,8 +2,6 @@
 namespace Arango\Connection;
 
 /**
- * TraceRequest class
- *
  * Trace requests to server
  *
  * @package Arango/Connection

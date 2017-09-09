@@ -12,7 +12,7 @@ use Arango\Exception\ServerException;
  * @interface Request
  * @author Lucas S. Vieira
  */
-abstract class Request implements RequestInterface {
+abstract class Request implements ExecuteRequest {
 
   /**
    * Issue an HTTP GET request

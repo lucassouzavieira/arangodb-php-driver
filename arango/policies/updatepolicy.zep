@@ -4,13 +4,13 @@ namespace Arango\Policies;
 use Arango\Exception\ClientException;
 
 /**
- * UpdatePolicy class
+ * Validate an supplied update policy value
  *
  * @package Arango/Policies
  * @class UpdatePolicy
  * @author Lucas S. Vieira
  */
-class UpdatePolicy implements PolicyInterface {
+class UpdatePolicy implements Policy {
 
   /* Last update will win in case of conflicting versions*/
   const LAST = "last";
@@ -22,7 +22,7 @@ class UpdatePolicy implements PolicyInterface {
    * Validate a supplied policy value
    *
    * @throws \Arango\Exception\ClientException
-   * @param string value - update policy value
+   * @param string value
    * @return void
    */
   public static function validate(string value) -> void {

@@ -4,8 +4,6 @@ namespace Arango\Collection;
 use Arango\Exception\ClientException;
 
 /**
- * Collection class
- *
  * Represents a Collection in Arango Database
  *
  * @package Arango/Collection
@@ -17,77 +15,77 @@ class Collection implements \JsonSerializable {
   /**
   * Collection id (might be NULL for new collections)
   *
-  * @var mixed - Collection id
+  * @var mixed
   */
   private id;
 
   /**
   * Collection name (might be NULL for new collections)
   *
-  * @var string - Collection name
+  * @var string
   */
   private name;
 
   /**
   * Collection type (might be NULL for new collections)
   *
-  * @var int - Collection type
+  * @var int
   */
   private type;
 
   /**
   * Collection waitForSync value (might be NULL for new collections)
   *
-  * @var boolean - waitForSync value
+  * @var boolean
   */
   private waitForSync;
 
   /**
   * Collection journalSize value (might be NULL for new collections)
   *
-  * @var int - journalSize value
+  * @var int
   */
   private journalSize;
 
   /**
   * Collection isSystem value (might be NULL for new collections)
   *
-  * @var boolean - isSystem value
+  * @var boolean
   */
   private isSystem;
 
   /**
   * Collection isVolatile value (might be NULL for new collections)
   *
-  * @var boolean - isVolatile value
+  * @var boolean
   */
   private isVolatile;
 
   /**
   * Collection numberOfShards value (might be NULL for new collections)
   *
-  * @var int - numberOfShards value
+  * @var int
   */
   private numberOfShards;
 
   /**
   * Collection shardKeys value (might be NULL for new collections)
   *
-  * @var array - shardKeys value
+  * @var array
   */
   private shardKeys;
 
   /**
   * Collection status value (might be NULL for new collections)
   *
-  * @var int - status value
+  * @var int
   */
   private status;
 
   /**
   * Collection keyOptions value (might be NULL for new collections)
   *
-  * @var array - keyOptions value
+  * @var array
   */
   private keyOptions;
 

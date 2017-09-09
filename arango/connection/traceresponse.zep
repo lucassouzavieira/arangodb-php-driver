@@ -4,8 +4,6 @@ namespace Arango\Connection;
 use Arango\Exception\ClientException;
 
 /**
- * TraceResponse class
- *
  * Trace responses from server
  *
  * @package Arango/Connection

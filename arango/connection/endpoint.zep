@@ -6,16 +6,14 @@ use Arango\Connection\Connection;
 use Arango\Exception\ClientException;
 
 /**
- * Endpoint class
- *
  * An endpoint contains the server location the client connects to
- * the following endpoint types are currently supported (more to be added later):
+ * the following endpoint types are currently supported:
  *
- * tcp://host:port for tcp connections
- * unix://socket for UNIX sockets (provided the server supports this)
- * ssl://host:port for SSL connections (provided the server supports this)
+ * tcp://host:port for tcp connections <br>
+ * unix://socket for UNIX sockets (provided the server supports this) <br>
+ * ssl://host:port for SSL connections (provided the server supports this) <br>
  *
- * Note: SSL support is added in Arango server 1.1
+ * Note: SSL support is added in Arango server 1.1 <br>
  *
  * @package Arango/Connection
  * @class Options

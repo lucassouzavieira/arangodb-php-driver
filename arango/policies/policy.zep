@@ -8,12 +8,13 @@ namespace Arango\Policies;
  * @interface Policy
  * @author Lucas S. Vieira
  */
-interface PolicyInterface {
+interface Policy {
 
   /**
    * Validate an supplied policy value
    *
-   * @throws \Arango\Exception\ClientException if the value supplied is not valid
+   * @throws \Arango\Exception\ClientException
+   *
    * @return void
    */
   public static function validate(string value) -> void;

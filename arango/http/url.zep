@@ -2,7 +2,7 @@
 namespace Arango\Http;
 
 /**
- * Url Helper class
+ * Helper class to manage URLs
  *
  * @package Arango/Http
  * @class Url
