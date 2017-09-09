@@ -12,7 +12,7 @@ use Arango\Exception\ServerException;
 
 /**
  * A handler that manages collections
- * TODO Review
+ * TODO Finish
  * @package Arango/Handler
  * @class CollectionHandler
  * @author Lucas S. Vieira
@@ -68,15 +68,14 @@ class CollectionHandler extends Handler {
   /**
    * Creates a new collection on the server
    *
-   * This will add the collection on the server and return its id
-   * The id is mainly returned for backwards compatibility, but you should use the collection name for any reference to the collection.   *
-   * This will throw if the collection cannot be created
+   * This will add the collection on the server and return its id <br>
+   * The id is mainly returned for backwards compatibility, but you should use the collection name for any reference to the collection.<br>
+   * This will throw if the collection cannot be created <br>
    *
    * @throws Exception
    *
-   * @param string $name       - A string with the collection name
-   * @param array $options     - An array of options.
-   *                          Options are :
+   * @param string $name A string with the collection name
+   * @param array $options An array of options. Options are :
    *                          'type'            - 2 -> normal collection, 3 -> edge-collection
    *                          'waitForSync'     -  if set to true, then all removal operations will instantly be synchronised to disk / If this is not specified, then the collection's default sync behavior will be applied.
    *                          'journalSize'     -  journalSize value.
@@ -424,5 +423,4 @@ class CollectionHandler extends Handler {
   public function any(collectionId) -> void {
 
   }
-
  }
