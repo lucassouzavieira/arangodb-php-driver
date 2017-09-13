@@ -53,12 +53,12 @@
         "internal-call-transformation": false
     },
     "namespace": "arango",
-    "name": "Arango Driver",
-    "description": "Arango PHP Driver",
+    "name": "ArangoDB PHP Driver",
+    "description": "ArangoDB PHP Driver",
     "author": "Lucas S. Vieira",
-    "version": "0.0.2-alpha",
+    "version": "0.0.3",
     "verbose": false,
     "requires": {
-        "extensions": []
+        "extensions": ["json"]
     }
 }
