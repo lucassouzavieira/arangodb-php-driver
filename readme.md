@@ -1,5 +1,7 @@
 # ArangoDB PHP Driver
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/41fd329675c64a7ab583ebbdc1a88db1)](https://www.codacy.com/app/lucassouzavieira/arangodb-php-driver?utm_source=github.com&utm_medium=referral&utm_content=lucassouzavieira/arangodb-php-driver&utm_campaign=badger)
+
 A client for ArangoDB compiled as an extension for PHP.
 
 ## Description
