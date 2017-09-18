@@ -4,7 +4,8 @@ A client for ArangoDB compiled as an extension for PHP.
 
 ## Description
 
-ArangoDB-PHP-Driver is a PHP client for ArangoDB written as extension for language.
+ArangoDB-PHP-Driver is a PHP client for ArangoDB written as C-extension for language.  
+This project is still in work in progress (WIP), so some features are still being implemented.
 
 ## Requirements
 
@@ -13,7 +14,26 @@ ArangoDB-PHP-Driver is a PHP client for ArangoDB written as extension for langua
 
 ## Installing
 
- We will soon add more information about the installation process
+While the driver is still being implemented, you can install it from this repository using the Zephir language tools.
+To help you with this task, there are two configuration scripts in `config` directory. They will install Zephir parser and Zephir language in your environment.
+
+### Debian, Ubuntu, Mint and other Debian-based distros
+
+Use the Debian script:  
+`sudo chmod a+x config\debian\install.sh`  
+`sudo ./config\debian\install.sh`
+
+### Fedora, CentOS or RHEL
+
+Use the Fedora script:  
+`sudo chmod a+x config\fedora\install.sh`  
+`sudo ./config\fedora\install.sh`
+
+The next step is to clone this repository and compile the extension:
+
+`git clone https://github.com/lucassouzavieira/arangodb-php-driver.git`  
+`cd arangodb-php-driver/`  
+`sudo zephir build` (Because the extension is also added in your `php.ini` file)
 
 ## How to Use PHP Client
 
@@ -25,11 +45,10 @@ ArangoDB-PHP-Driver is a PHP client for ArangoDB written as extension for langua
 * Clone your fork
 * Add this repository as second remote to your own with this command:
  `git remote add upstream https://github.com/lucassouzavieira/ArangoDB-PHP-Driver.git`
-
 * Check our open issues or open a new if you find a trouble
-* Open a Pull Request to integrate your contribution  
+* Open a Pull Request to integrate your contribution
 
-and also, we recommend reading the following article: Contributing to open source
+and also, we recommend reading the following article: [Contributing to open source](https://opensource.guide/how-to-contribute/)
 
 ## License
 
