@@ -16,8 +16,8 @@ sudo ./install
 
 # Add Zephir parser extension in php.ini file
 
-sudo "[Zephir extension]" >> /etc/php.ini
-sudo "extension=zephir_parser.so" >> /etc/php.ini
+echo "[Zephir extension]" | sudo tee -a /etc/php.ini > /dev/null
+echo "extension=zephir_parser.so" | sudo tee -a /etc/php.ini > /dev/null
 
 # Restart web server
 sudo systemctl restart httpd
