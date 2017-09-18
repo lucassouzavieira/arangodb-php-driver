@@ -6,6 +6,7 @@ use Arango\Http\Url;
 use Arango\Http\Response;
 use Arango\Document\Document;
 use Arango\Connection\Connection;
+use Arango\Exception\ServerException;
 use Arango\Exception\ClientException;
 
 /**
@@ -20,7 +21,6 @@ class DocumentHandler extends Handler {
   /**
    * Class indexes
    */
-
   const ENTRY_DOCUMENTS = "documents";
   const OPTION_COLLECTION = "collection";
   const OPTION_EXAMPLE = "example";
@@ -81,6 +81,7 @@ class DocumentHandler extends Handler {
   /**
    * Build the revision headers for an requisition
    *
+   * @link https://github.com/arangodb/arangodb-php/blob/devel/lib/ArangoDBClient/DocumentHandler.php#L161-L169
    * @param array options
    *
    * @return array
@@ -99,5 +100,31 @@ class DocumentHandler extends Handler {
     }
 
     return header;
+  }
+
+  /**
+   * Check if a document exists in collection
+   *
+   * @param string documentId
+   *
+   * @return boolean
+   */
+  public function has(string documentId) -> boolean {
+    var e;
+
+    try {
+
+      this->get(documentId);
+
+    } catch ServerException | \Exception, e {
+
+      if(e->getCode() == 404) {
+        return false;
+      }
+
+      throw e;
+    }
+
+    return true;
   }
 }
