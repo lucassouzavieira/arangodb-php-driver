@@ -3,6 +3,7 @@ namespace Arango\Handler;
 
 use Arango\Http\Api;
 use Arango\Http\Url;
+use Arango\Http\Request;
 use Arango\Http\Response;
 use Arango\Document\Document;
 use Arango\Connection\Connection;
@@ -105,6 +106,7 @@ class DocumentHandler extends Handler {
   /**
    * Check if a document exists in collection
    *
+   * @throws \Arango\Exception\ServerException | \Exception
    * @param string documentId
    *
    * @return boolean
@@ -113,18 +115,44 @@ class DocumentHandler extends Handler {
     var e;
 
     try {
-
       this->get(documentId);
-
     } catch ServerException | \Exception, e {
 
       if(e->getCode() == 404) {
         return false;
       }
-
       throw e;
     }
 
     return true;
+  }
+
+  /**
+   * Get informations about a single document
+   *
+   * @throws \Arango\Exception\ServerException | \Exception
+   * @param string documentId
+   * @param array options
+   *
+   * @return array
+   */
+  public function getInfo(string documentId, array options = []) -> array {
+    var collection, document, url, headers, documentData;
+
+    let documentData = explode("/", documentId);
+    let collection = documentData[0];
+    let document = documentData[1];
+
+    let url = Url::buildUrl(Api::DOCUMENT, [collection, document]);
+    let headers = this->buildRevisionHeaders(options);
+
+    var response, responseHeaders;
+
+    // Make the request
+    let response = this->getConnection()->head(url, headers);
+    let responseHeaders = response->getHeaders();
+    let responseHeaders["httpCode"] = response->getCode();
+
+    return responseHeaders;
   }
 }
