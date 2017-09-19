@@ -2,4 +2,5 @@
 compile-errors.log
 compile.log
 ext/
+!ext/modules/arango.so
 ide/

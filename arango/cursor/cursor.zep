@@ -406,7 +406,6 @@ class Cursor implements \Iterator {
     this->updateLength();
   }
 
-
   /**
    * Rewind the cursor, necessary for Iterator
    *
