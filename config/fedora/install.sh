@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 echo "This script will install Zephir language tools in your $(uname -r) environment"
 
