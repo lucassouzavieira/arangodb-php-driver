@@ -20,7 +20,7 @@ use Arango\Exception\ClientException;
  * @class Cursor
  * @author Lucas S. Vieira
  */
-class Cursor implements \Iterator {
+class Cursor implements \Iterator, \Countable {
 
   /**
    * The connection object
@@ -502,6 +502,14 @@ class Cursor implements \Iterator {
     let this->length = count(this->result);
   }
 
+  /**
+   * \Countable method
+   *
+   * @return int
+   */
+  public function count() -> int {
+    return this->length;
+  }
   /**
    * Return the base url for cursor
    *
