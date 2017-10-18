@@ -265,8 +265,7 @@ class Connection extends Request {
        var authorization;
 
        let authorization = base64_encode(
-         this->options->offsetGet(Options::AUTH_USER) . ":",
-         this->options->offsetGet(Options::AUTH_PASSWD)
+         this->options->offsetGet(Options::AUTH_USER) . ":" . this->options->offsetGet(Options::AUTH_PASSWD)
        );
 
        let this->httpHeader = this->httpHeader . sprintf(

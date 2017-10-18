@@ -20,7 +20,7 @@ abstract class Handler {
    *
    * @var Connection
    */
-  private connection;
+  protected connection;
 
   /**
    * Construct a new handler

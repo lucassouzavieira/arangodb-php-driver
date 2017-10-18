@@ -164,6 +164,7 @@ abstract class Client {
        error,
        message,
        options[Options::TIMEOUT],
+       STREAM_CLIENT_CONNECT,
        context
      );
 

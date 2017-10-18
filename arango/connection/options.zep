@@ -307,23 +307,19 @@ class Options implements \ArrayAccess {
    * @return void
    */
   private function validate() -> void {
-    if(isset(this->values[self::HOST]) && !is_string(this->values[self::HOST])) {
+    if(!is_null(this->values[self::HOST]) && !is_string(this->values[self::HOST])) {
       throw new ClientException("Host should be a string");
     }
 
-    if(isset(this->values[self::PORT]) && !is_int(this->values[self::PORT])) {
-      throw new ClientException("Host should be an integer");
+    if(!is_null(this->values[self::PORT]) && !is_int(this->values[self::PORT])) {
+      throw new ClientException("Port should be an integer");
     }
 
-    if(isset(this->values[self::HOST]) && !is_string(this->values[self::HOST])) {
-      throw new ClientException("Host should be a string");
-    }
-
-    if(isset(this->values[self::HOST]) && !is_null(this->values[self::ENDPOINT])) {
+    if(!is_null(this->values[self::HOST]) && !is_null(this->values[self::ENDPOINT])) {
       throw new ClientException("Must not specify both Host and Endpoint");
     }
 
-    if(isset(this->values[self::HOST]) || !isset(this->values[self::ENDPOINT])) {
+    if(isset(this->values[self::HOST]) || is_null(this->values[self::ENDPOINT])) {
       let this->values[self::ENDPOINT] = "tcp://" .
               this->values[self::HOST] . ":" . this->values[self::PORT];
       unset(this->values[self::HOST]);
