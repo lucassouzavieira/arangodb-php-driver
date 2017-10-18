@@ -46,16 +46,11 @@ class BatchPart {
    };
 
    /**
-    * Batch part request for this instance
-    * TODO
-    *   refactor request setter and getter.
-    *   This attribute must be an instance of \Arango\Http\Response
+    * Request object for this instance
     *
-    * @var string
+    * @var Arango\Http\Response
     */
-   private request {
-     get, set
-   };
+   private request;
 
    /**
     * Batch part response for this instance
@@ -88,13 +83,13 @@ class BatchPart {
     * @param Batch batch
     * @param mixed id
     * @param mixed type
-    * @param string request
+    * @param Arango\Http\Request request
     * @param string response
     * @param array options
     *
     * @return void
     */
-   public function __construct(<Batch> batch, id, type, string request, string response, array options = []) {
+   public function __construct(<Batch> batch, id, type, <Request> request, string response, array options = []) {
      let options = array_merge(options, this->getCursorOptions());
 
      if(isset(options["_documentClass"])){
@@ -132,6 +127,26 @@ class BatchPart {
     */
    public function getBatch() -> <Batch> {
      return this->batch;
+   }
+
+   /**
+    * Sets the Request for this batch part
+    *
+    * @param Request request
+    *
+    * @return void
+    */
+   public function setRequest(<Request> request) -> void {
+     let this->request = request;
+   }
+
+   /**
+    * Gets the Request object for this batch part
+    *
+    * @return Arango\Http\Request
+    */
+   public function getRequest() -> <Request> {
+     return this->request;
    }
 
    /**
