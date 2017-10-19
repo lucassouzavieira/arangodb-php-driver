@@ -72,6 +72,10 @@ abstract class Handler {
    * @return string     - Collection name or empty string if the value is not an Document or Collection
    */
   protected function getCollectionName(value) -> string {
+    if(is_string(value)) {
+      return value;
+    }
+
     if(value instanceof Collection) {
       return value->getName();
     }
@@ -80,7 +84,6 @@ abstract class Handler {
       return value->getConnectionId();
     }
 
-    // Fallback is empty string
-    return value;
+    return "";
   }
 }
