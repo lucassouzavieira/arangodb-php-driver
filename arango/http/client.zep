@@ -139,7 +139,7 @@ abstract class Client {
    * @param Options options - Connection options
    * @return resource - socket with server connection
    */
-   public static function createConnection(<Options> options){
+   public static function createConnection(<Options> options) {
      var endpoint;
      var context;
      var socketResource;
@@ -160,7 +160,7 @@ abstract class Client {
      }
 
      let socketResource = stream_socket_client(
-       endpoint,
+       options->getEndpoint(),
        error,
        message,
        options[Options::TIMEOUT],
@@ -172,7 +172,7 @@ abstract class Client {
        throw new ConnectionException("Cannot connect to endpoint \ " . options[Options::ENDPOINT] . " \: " . message . error );
      }
 
-     stream_set_timeout(socketResource, Options::TIMEOUT);
+     stream_set_timeout(socketResource, options[Options::TIMEOUT]);
 
      return socketResource;
    }

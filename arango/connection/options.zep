@@ -175,14 +175,16 @@ class Options implements \ArrayAccess {
    *
    * @var array
    */
-  private values;
+  protected values;
 
   /**
    * The current options
    *
-   * @var Endpoint
+   * @var string
    */
-  private endpoint;
+  protected endpoint {
+    get, set
+  };
 
   /**
    * Set defaults, use options provided by client and validate them
@@ -194,6 +196,7 @@ class Options implements \ArrayAccess {
   public function __construct(array options) {
     let this->values = array_merge(self::getDefaults(), options);
     this->validate();
+    let this->endpoint = this->values[self::ENDPOINT];
   }
 
   /**
@@ -319,9 +322,8 @@ class Options implements \ArrayAccess {
       throw new ClientException("Must not specify both Host and Endpoint");
     }
 
-    if(isset(this->values[self::HOST]) || is_null(this->values[self::ENDPOINT])) {
-      let this->values[self::ENDPOINT] = "tcp://" .
-              this->values[self::HOST] . ":" . this->values[self::PORT];
+    if(!is_null(this->values[self::HOST]) || is_null(this->values[self::ENDPOINT])) {
+      let this->values[self::ENDPOINT] = "tcp://" . this->values[self::HOST] . ":" . this->values[self::PORT];
       unset(this->values[self::HOST]);
     }
 
