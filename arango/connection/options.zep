@@ -12,7 +12,7 @@ use Arango\Exception\ClientException;
  * @class Options
  * @author Lucas S. Vieira
  */
-class Options implements \ArrayAccess {
+class Options {
 
   /**
    * Endpoint string index constant
@@ -256,51 +256,31 @@ class Options implements \ArrayAccess {
   }
 
   /**
-   * Check if an option exists
-   *
-   * @param string offset
-   * @return boolean
-   */
-  public function offsetExists(string offset){
-    return isset(this->values[offset]);
-  }
-
-  /**
-   * Get an specific option
-   *
-   * @throws \Arango\Exception\ClientException
-   * @param string offset
+   * Access options properties
+   * @param string name
    * @return mixed
    */
-  public function offsetGet(string offset){
-    if(!array_key_exists(offset, this->values)){
-      throw new ClientException("Invalid option: " . offset);
+  public function __get(string name) {
+    if(array_key_exists(name, this->values)) {
+      return this->values[name];
     }
 
-    return this->values[offset];
+    return null;
   }
 
   /**
-   * Set and validate a specific option
-   *
+   * Access options properties
    * @throws \Exception
-   * @param string offset - Name of option
-   * @param mixed value - Value for option
+   * @param string name
+   *
+   * @return mixed
    */
-  public function offsetSet(string offset, value) {
-    let this->values[offset] = value;
-    this->validate();
-  }
+  public function __set(string name, value) -> void {
+    if(in_array(name, array_keys(this->getDefaults()))) {
+      let this->values[name] = value;
+    }
 
-  /**
-   * Remove an option and validate
-   *
-   * @throws \Exception
-   * @param string offset - Name of option
-   */
-  public function offsetUnset(string offset) {
-    unset(this->values[offset]);
-    this->validate();
+    throw new \Exception("Try set an invalid option");
   }
 
   /**
