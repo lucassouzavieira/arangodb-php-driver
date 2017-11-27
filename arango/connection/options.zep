@@ -260,7 +260,7 @@ class Options {
    * @param string name
    * @return mixed
    */
-  public function __get(string name) {
+  public function getValue(string name) {
     if(array_key_exists(name, this->values)) {
       return this->values[name];
     }
@@ -275,7 +275,7 @@ class Options {
    *
    * @return mixed
    */
-  public function __set(string name, value) -> void {
+  public function setValue(string name, value) -> void {
     if(in_array(name, array_keys(this->getDefaults()))) {
       let this->values[name] = value;
     }

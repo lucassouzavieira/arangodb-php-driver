@@ -146,16 +146,16 @@ abstract class Client {
      var error;
      var message;
 
-     let endpoint = options[Options::ENDPOINT];
+     let endpoint = options->getValue(Options::ENDPOINT);
      let context = stream_context_create();
 
      /* SSL connection */
      if(Endpoint::getType(endpoint) === Endpoint::TYPE_SSL){
-       stream_context_set_option(context, "ssl", "verify_peer", options[Options::VERIFY_CERT]);
-       stream_context_set_option(context, "ssl", "allow_self_signed", options[Options::ALLOW_SELF_SIGNED]);
+       stream_context_set_option(context, "ssl", "verify_peer", options->getValue(Options::VERIFY_CERT));
+       stream_context_set_option(context, "ssl", "allow_self_signed", options->getValue(Options::ALLOW_SELF_SIGNED));
 
-       if(!is_null(options[Options::CIPHERS])){
-         stream_context_set_option(context, "ssl", "ciphers", options[Options::CIPHERS]);
+       if(!is_null(options->getValue(Options::CIPHERS))){
+         stream_context_set_option(context, "ssl", "ciphers", options->getValue(Options::CIPHERS));
        }
      }
 
@@ -163,16 +163,16 @@ abstract class Client {
        options->getEndpoint(),
        error,
        message,
-       options[Options::TIMEOUT],
+       options->getValue(Options::TIMEOUT),
        STREAM_CLIENT_CONNECT,
        context
      );
 
      if(!socketResource){
-       throw new ConnectionException("Cannot connect to endpoint \ " . options[Options::ENDPOINT] . " \: " . message . error );
+       throw new ConnectionException("Cannot connect to endpoint \ " . options->getValue(Options::ENDPOINT) . " \: " . message . error );
      }
 
-     stream_set_timeout(socketResource, options[Options::TIMEOUT]);
+     stream_set_timeout(socketResource, options->getValue(Options::TIMEOUT));
 
      return socketResource;
    }
@@ -203,10 +203,10 @@ abstract class Client {
 
        let contentType = "Content-Type: multipart/form-data; boundary=" . self::MIME_BOUNDARY . self::EOL;
 
-       if(!options[Options::BATCH]){
+       if(!options->getValue(Options::BATCH)){
          let contentType = "";
 
-         if(lenght > 0 && options[Options::BATCHPART] == false){
+         if(lenght > 0 && options->getValue(Options::BATCHPART) == false){
            let contentType = "Content-Type: application/json" . self::EOL;
          }
        }
