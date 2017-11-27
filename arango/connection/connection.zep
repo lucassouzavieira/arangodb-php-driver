@@ -231,7 +231,7 @@ class Connection extends Request {
    * @return void
    */
   public function setDatabase(string database) -> void {
-    this->options->offsetSet(Options::DATABASE, database);
+    this->options->setValue(Options::DATABASE, database);
     let this->database = database;
     this->updateHttpHeader();
   }
@@ -254,7 +254,7 @@ class Connection extends Request {
      var endpoint;
 
      let this->httpHeader = Client::EOL;
-     let endpoint = this->options->offsetGet(Options::ENDPOINT);
+     let endpoint = this->options->getValue(Options::ENDPOINT);
 
      if(Endpoint::getType(endpoint) != Endpoint::TYPE_UNIX){
        let this->httpHeader = this->httpHeader . sprintf("Host: %s%s", Endpoint::getHost(endpoint), Client::EOL);

@@ -284,6 +284,16 @@ class Options {
   }
 
   /**
+   * Check if options propertie exists
+   * @param string name
+   *
+   * @return boolean
+   */
+  public function exists(string name) -> boolean {
+    return isset(this->values[offset]);
+  }
+
+  /**
    * Validate the options
    *
    * @throws \Arango\Exception\ClientException
