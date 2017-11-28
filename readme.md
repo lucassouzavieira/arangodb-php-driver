@@ -62,14 +62,7 @@ At this point, your environment should already be ready to develop. To compile t
 
 ## How to contribute
 
-* Fork this repository
-* Clone your fork
-* Add this repository as second remote to your own with this command:  
- `git remote add upstream https://github.com/lucassouzavieira/ArangoDB-PHP-Driver.git`
-* Check our open issues or open a new if you find a trouble
-* Open a Pull Request to integrate your contribution
-
-and also, we recommend reading the following article: [Contributing to open source](https://opensource.guide/how-to-contribute/)
+[Check how contribute in this project](CONTRIBUTING.md)
 
 ## License
 

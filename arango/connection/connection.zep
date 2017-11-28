@@ -114,11 +114,11 @@ class Connection extends Request {
     let this->options = new Options(options);
     let this->useKeepAlive = false;
 
-    if(this->options->offsetGet(Options::CONNECTION) == "Keep-Alive") {
+    if(this->options->getValue(Options::CONNECTION) == "Keep-Alive") {
       let this->useKeepAlive = true;
     }
 
-    this->setDatabase(this->options->offsetGet(Options::DATABASE));
+    this->setDatabase(this->options->getValue(Options::DATABASE));
     this->updateHttpHeader();
   }
 
@@ -260,27 +260,27 @@ class Connection extends Request {
        let this->httpHeader = this->httpHeader . sprintf("Host: %s%s", Endpoint::getHost(endpoint), Client::EOL);
      }
 
-     if(this->options->offsetExists(Options::AUTH_TYPE) && this->options->offsetExists(Options::AUTH_USER)){
+     if(this->options->exists(Options::AUTH_TYPE) && this->options->exists(Options::AUTH_USER)){
        /* Add autorization header */
        var authorization;
 
        let authorization = base64_encode(
-         this->options->offsetGet(Options::AUTH_USER) . ":" . this->options->offsetGet(Options::AUTH_PASSWD)
+         this->options->getValue(Options::AUTH_USER) . ":" . this->options->getValue(Options::AUTH_PASSWD)
        );
 
        let this->httpHeader = this->httpHeader . sprintf(
          "Authorization: %s %s%s",
-         this->options->offsetGet(Options::AUTH_TYPE),
+         this->options->getValue(Options::AUTH_TYPE),
          authorization,
          Client::EOL
        );
      }
 
-     if(this->options->offsetExists(Options::CONNECTION)){
+     if(this->options->exists(Options::CONNECTION)){
        /* Add connection header */
        let this->httpHeader = this->httpHeader . sprintf(
          "Connection: %s%s",
-         this->options->offsetGet(Options::CONNECTION),
+         this->options->getValue(Options::CONNECTION),
          Client::EOL
        );
      }
