@@ -317,7 +317,7 @@ class Connection extends Request {
        fclose(this->handle);
        let this->handle = 0;
 
-       if(!this->options[Options::RECONNECT]){
+       if(!this->options->getValue(Options::RECONNECT)){
          throw new ClientException("Server has closed connection already");
        }
      }
@@ -362,9 +362,9 @@ class Connection extends Request {
 
      if (this->batchRequest == false) {
        if(this->captureBatch == true) {
-         this->options->offsetSet(Options::BATCHPART, true);
+         this->options->setValue(Options::BATCHPART, true);
          let request = Client::buildRequest(this->options, this->httpHeader, method, url, data, customHeaders);
-         this->options->offsetSet(Options::BATCHPART, false);
+         this->options->setValue(Options::BATCHPART, false);
        } else {
          let request = Client::buildRequest(this->options, this->httpHeader, method, url, data, customHeaders);
        }
@@ -381,21 +381,21 @@ class Connection extends Request {
      } else {
        let this->batchRequest = false;
 
-       this->options->offsetSet(Options::BATCHPART, true);
+       this->options->setValue(Options::BATCHPART, true);
        let request = Client::buildRequest(this->options, this->httpHeader, method, url, data, customHeaders);
-       this->options->offsetSet(Options::BATCHPART, false);
+       this->options->setValue(Options::BATCHPART, false);
      }
 
      /* traceFunc is a callback defined by user.
         If is defined, should be called in each communication with server */
      var traceFunc;
-     let traceFunc = this->options[Options::TRACE];
+     let traceFunc = this->options->getValue(Options::TRACE);
 
      if(traceFunc) {
-       if(this->options[Options::ENHANCED_TRACE]) {
+       if(this->options->getValue(Options::ENHANCED_TRACE)) {
          var header, headers;
 
-         let header = Client::parseHttpMessage(request, url, method);
+         let header = Client::parseHttpMessage(request);
          let headers = Client::parseHttpHeaders(header);
          traceFunc(new TraceRequest(headers[2], method, url, data));
        } else {
@@ -433,7 +433,7 @@ class Connection extends Request {
 
        if(traceFunc) {
          // call traceFunc
-         if(this->options[Options::ENHANCED_TRACE]) {
+         if(this->options->getValue(Options::ENHANCED_TRACE)) {
            traceFunc(new TraceResponse(
              response->getHeaders(),
              response->getCode(),

@@ -276,11 +276,11 @@ class Options {
    * @return mixed
    */
   public function setValue(string name, value) -> void {
-    if(in_array(name, array_keys(this->getDefaults()))) {
-      let this->values[name] = value;
+    if(!in_array(name, array_keys(this->getDefaults()))) {
+      throw new \Exception("Try set an invalid option");
     }
 
-    throw new \Exception("Try set an invalid option");
+    let this->values[name] = value;
   }
 
   /**
@@ -290,7 +290,7 @@ class Options {
    * @return boolean
    */
   public function exists(string name) -> boolean {
-    return isset(this->values[offset]);
+    return isset(this->values[name]);
   }
 
   /**

@@ -90,7 +90,7 @@ class Response {
       }
     }
 
-    let parseMessage = Client::parseHttpMessage(response, url, method);
+    let parseMessage = Client::parseHttpMessage(response);
     let this->header = parseMessage[0];
     let this->body = parseMessage[1];
 
