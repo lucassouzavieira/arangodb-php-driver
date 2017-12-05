@@ -1,5 +1,5 @@
 
-namespace Arango\Http;
+namespace Arango\Http\Base;
 
 use Arango\Http\Contracts\Stream as StreamInterface;
 use Arango\Http\Contracts\Message as MessageInterface;
@@ -8,7 +8,7 @@ use Arango\Http\Contracts\Message as MessageInterface;
  * Message abstract class
  *
  * @since 1.0
- * @package Arango\Http
+ * @package Arango\Http\Base
  * @author Lucas S. Vieira
  */
 abstract class Message implements MessageInterface {
@@ -26,6 +26,13 @@ abstract class Message implements MessageInterface {
    * @var array
    */
   protected headers = [];
+
+  /**
+   * Headers store
+   *
+   * @var StreamInterface
+   */
+  protected stream;
 
   /**
    * @see Arango\Http\Contracts\Message::getProtocolVersion()
@@ -84,5 +91,12 @@ abstract class Message implements MessageInterface {
     }
 
     return implode(",", value);
+  }
+
+  /**
+   * @see Arango\Http\Contracts\Message::getBody()
+   */
+  public function getBody() -> <StreamInterface> {
+    return this->stream;
   }
 }
