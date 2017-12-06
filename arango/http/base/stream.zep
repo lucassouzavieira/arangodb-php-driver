@@ -185,6 +185,101 @@ class Stream implements StreamInterface {
   }
 
   /**
+   * @see Arango\Http\Contracts\Stream::write()
+   */
+  public function write(string str) -> int {
+    if(!is_resource(this->streamResource)) {
+      throw new \RuntimeException("No resource available");
+    }
+
+    var result;
+    let result = fwrite(this->streamResource, str);
+
+    if(result === false) {
+      throw new \RuntimeException("Error writing to stream");
+    }
+
+    return result;
+  }
+
+  /**
+   * @see Arango\Http\Contracts\Stream::isReadable()
+   */
+  public function isReadable() -> bool {
+    if(!is_resource(this->streamResource)) {
+      return false;
+    }
+
+    var meta, mode;
+    let meta = stream_get_meta_data(this->streamResource);
+    let mode = meta["mode"];
+
+    return (strstr(mode, "r") || strstr(mode, "+"));
+  }
+
+  /**
+   * @see Arango\Http\Contracts\Stream::read()
+   */
+  public function read(int lenght) -> string {
+    if(!is_resource(this->streamResource)) {
+      throw new \RuntimeException("No resource available");
+    }
+
+    if(!this->isReadable()) {
+      throw new \RuntimeException("Stream is not readable");
+    }
+
+    var result;
+    let result = fread(this->streamResource, lenght);
+
+    if(result === false) {
+      throw new \RuntimeException("Error reading from stream");
+    }
+
+    return result;
+  }
+
+  /**
+   * @see Arango\Http\Contracts\Stream::getContents()
+   */
+  public function getContents() -> string {
+    if(!is_resource(this->streamResource)) {
+      throw new \RuntimeException("No resource available");
+    }
+
+    if(!this->isReadable()) {
+      return "";
+    }
+
+    var result;
+    let result = stream_get_contents(this->streamResource);
+
+    if(result === false) {
+      throw new \RuntimeException("Error reading from stream");
+    }
+
+    return result;
+  }
+
+  /**
+   * @see Arango\Http\Contracts\Stream::getMetadata()
+   */
+  public function getMetadata(string key = null) {
+    var metadata;
+    let metadata = stream_get_meta_data(this->streamResource);
+
+    if(is_null(key)) {
+      return metadata;
+    }
+
+    if(!array_key_exists(key, metadata)) {
+      return null;
+    }
+
+    return metadata[key];
+  }
+
+  /**
    * Attach resource into object
    *
    * @param string|resource stream The stream resource header
@@ -208,5 +303,14 @@ class Stream implements StreamInterface {
     }
 
     return this;
+  }
+
+  /**
+   * Returns the resource of stream
+   *
+   * @return resource|null
+   */
+  public function getResource() {
+    return this->streamResource;
   }
 }

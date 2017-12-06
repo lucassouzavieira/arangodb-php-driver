@@ -122,7 +122,7 @@ interface Stream {
    * @return string
    * @throws \RuntimeException
    */
-  public function getContents();
+  public function getContents() -> string;
 
   /**
    * Get stream metadata as an associative array or retrieve a specific key.
