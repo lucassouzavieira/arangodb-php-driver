@@ -73,7 +73,7 @@ interface Stream {
    *     SEEK_END: Set position to end-of-stream plus offset.
    * @throws \RuntimeException on failure
    */
-  public function seek(int offset, int whence);
+  public function seek(int offset, int whence = 0);
 
   /**
    * Seek to the beginning of the stream.

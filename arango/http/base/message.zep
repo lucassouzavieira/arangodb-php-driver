@@ -8,6 +8,7 @@ use Arango\Http\Contracts\Message as MessageInterface;
  * Message abstract class
  *
  * @since 1.0
+ * @abstract
  * @package Arango\Http\Base
  * @author Lucas S. Vieira
  */
