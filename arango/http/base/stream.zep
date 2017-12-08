@@ -273,11 +273,11 @@ class Stream implements StreamInterface {
   /**
    * @see Arango\Http\Contracts\Stream::getMetadata()
    */
-  public function getMetadata(string key = null) {
+  public function getMetadata(string key = "") {
     var metadata;
     let metadata = stream_get_meta_data(this->streamResource);
 
-    if(is_null(key)) {
+    if(key === "") {
       return metadata;
     }
 

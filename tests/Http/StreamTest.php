@@ -258,5 +258,99 @@ class StreamTest extends TestCase
         $stream = new Stream($resource);
         $this->assertTrue($stream->isWritable());
     }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::write()
+     */
+    public function testWrite()
+    {
+        $this->makeTemporaryFile();
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_WRITE_RESET);
+        $stream = new Stream($resource);
+
+        $str = "flower";
+        $stream->write($str);
+        $this->assertEquals($str, file_get_contents($this->tempFile));
+
+        $stream->write(" bloom");
+        $this->assertEquals($str . " bloom", file_get_contents($this->tempFile));
+
+        $stream->seek(4);
+
+        $stream->write("test");
+        $this->assertEquals("flowtestloom", file_get_contents($this->tempFile));
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::isReadable()
+     */
+    public function testIsReadable()
+    {
+        $this->makeTemporaryFile();
+
+        $resource = fopen($this->tempFile, Stream::MODE_WRITE_ONLY_RESET);
+        $stream = new Stream($resource);
+
+        $this->assertFalse($stream->isReadable());
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_WRITE_RESET);
+        $stream = new Stream($resource);
+
+        $this->assertTrue($stream->isReadable());
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::read()
+     */
+    public function testRead()
+    {
+        $this->makeTemporaryFile();
+
+        file_put_contents($this->tempFile, "Queen");
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+        $stream = new Stream($resource);
+
+        $this->assertEquals("Qu", $stream->read(2));
+        $this->assertEquals("een", $stream->read(3));
+
+        $stream->rewind();
+
+        $this->assertEquals("Queen", $stream->read(5));
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::getContents()
+     */
+    public function testGetContents()
+    {
+        $this->makeTemporaryFile();
+
+        file_put_contents($this->tempFile, "Queen");
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+        $stream = new Stream($resource);
+
+        $this->assertEquals("Queen", $stream->getContents());
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::getMetadata()
+     */
+    public function testGetMetadata()
+    {
+        $this->makeTemporaryFile();
+
+        file_put_contents($this->tempFile, "Queen");
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_WRITE_FROM_BEGIN);
+        $this->instance->attach($resource);
+
+        $this->assertEquals(stream_get_meta_data($resource), $this->instance->getMetadata());
+        $this->assertEquals(Stream::MODE_READ_WRITE_FROM_BEGIN, $this->instance->getMetadata("mode"));
+
+        fclose($resource);
+    }
 }
 
