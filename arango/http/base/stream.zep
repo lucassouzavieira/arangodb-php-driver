@@ -19,7 +19,7 @@ class Stream implements StreamInterface {
   const MODE_WRITE_ONLY_FROM_END    = "a";
   const MODE_READ_WRITE_FROM_END    = "a+";
   const MODE_WRITE_ONLY_CREATE      = "x";
-  const MODE_READ_WRITE_ONLY_CREATE = "x+";
+  const MODE_READ_WRITE_CREATE      = "x+";
 
   /**
    * @var resource|string
@@ -103,7 +103,7 @@ class Stream implements StreamInterface {
   }
 
   /**
-   * @see Arango\Http\Contracts\Stream::getSize()
+   * @see Arango\Http\Contracts\Stream::tell()
    */
   public function tell() -> int {
     if(!is_resource(this->streamResource)) {
@@ -182,6 +182,10 @@ class Stream implements StreamInterface {
 
     var meta;
     let meta = stream_get_meta_data(this->streamResource);
+
+    if(meta["mode"] == "r") {
+      return false;
+    }
 
     return is_writable(meta["uri"]);
   }

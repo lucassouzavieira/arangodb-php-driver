@@ -67,7 +67,7 @@ class StreamTest extends TestCase
         file_put_contents($this->tempFile, "Foo bar");
 
         $stream = new Stream($this->tempFile, "w");
-        $this->assertEquals("", (string) $stream);
+        $this->assertEquals("", (string)$stream);
     }
 
     /**
@@ -86,7 +86,7 @@ class StreamTest extends TestCase
 
         $this->assertFalse(is_resource($resource));
         $this->assertAttributeEmpty('streamResource', $stream);
-        $this->assertEquals("", (string) $stream);
+        $this->assertEquals("", (string)$stream);
     }
 
     /**
@@ -101,6 +101,162 @@ class StreamTest extends TestCase
         $this->assertSame($resource, $stream->detach());
         $this->assertAttributeEmpty('streamResource', $stream);
         $this->assertAttributeEmpty('stream', $stream);
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::getSize()
+     */
+    public function testGetSize()
+    {
+        $this->makeTemporaryFile();
+
+        $str = "show must go on";
+        file_put_contents($this->tempFile, $str);
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+
+        $stream = new Stream($resource);
+
+        $this->assertEquals(strlen($str), $stream->getSize());
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::tell()
+     */
+    public function testTell()
+    {
+        $this->makeTemporaryFile();
+        $str = "show must go on";
+        file_put_contents($this->tempFile, $str);
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+
+        $stream = new Stream($resource);
+
+        fseek($resource, 2);
+
+        $this->assertEquals(2, $stream->tell());
+
+        $this->expectException(\RuntimeException::class);
+        $stream->detach();
+        $stream->tell();
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::eof()
+     */
+    public function testEof()
+    {
+        $this->makeTemporaryFile();
+        $str = "foo bar";
+        file_put_contents($this->tempFile, $str);
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+
+        $stream = new Stream($resource);
+
+        fseek($resource, 2);
+
+        $this->assertFalse($stream->eof());
+
+        while (!feof($resource)) {
+            fread($resource, 4096);
+        }
+
+        // Read all
+        $this->assertTrue($stream->eof());
+
+        $stream->rewind();
+        $stream->read(8);
+
+        $this->assertTrue($stream->eof());
+
+        // Seek
+        $stream->rewind();
+        $stream->seek(8);
+
+        $this->assertFalse($stream->eof());
+
+        // Read
+        $stream->read(random_int(1, 6));
+        $this->assertTrue($stream->eof());
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::isSeekable()
+     */
+    public function testIsSeekable()
+    {
+        $this->makeTemporaryFile();
+        $str = "foo bar";
+        file_put_contents($this->tempFile, $str);
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+
+        $stream = new Stream($resource);
+
+        $this->assertTrue($stream->isSeekable());
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::seek()
+     */
+    public function testSeek()
+    {
+        $this->makeTemporaryFile();
+        $str = "foo bar";
+        file_put_contents($this->tempFile, $str);
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+
+        $stream = new Stream($resource);
+
+        $stream->seek(2);
+        $this->assertEquals(2, $stream->tell());
+
+        $stream->seek(2, SEEK_CUR);
+        $this->assertEquals(4, $stream->tell());
+
+        $stream->seek(-1, SEEK_END);
+        $this->assertEquals(6, $stream->tell());
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::rewind()
+     */
+    public function testRewind()
+    {
+        $this->makeTemporaryFile();
+        $str = "foo bar";
+        file_put_contents($this->tempFile, $str);
+
+        $resource = fopen($this->tempFile, Stream::MODE_READ_WRITE_RESET);
+
+        $stream = new Stream($resource);
+
+        $stream->seek(random_int(1, 6));
+        $stream->rewind();
+
+        $this->assertEquals(0, $stream->tell());
+    }
+
+    /**
+     * @covers \Arango\Http\Base\Stream::isWritable()
+     */
+    public function testIsWritable()
+    {
+        $stream = new Stream("php://memory", Stream::MODE_READ_ONLY_FROM_BEGIN);
+        $this->assertFalse($stream->isWritable());
+
+        $this->makeTemporaryFile();
+        $resource = fopen($this->tempFile, Stream::MODE_READ_ONLY_FROM_BEGIN);
+
+        $stream = new Stream($resource);
+        $this->assertFalse($stream->isWritable());
+
+        $resource = fopen($this->tempFile, Stream::MODE_WRITE_ONLY_RESET);
+        $stream = new Stream($resource);
+        $this->assertTrue($stream->isWritable());
     }
 }
 
