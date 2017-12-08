@@ -12,12 +12,14 @@ use Arango\Http\Contracts\Stream as StreamInterface;
  */
 class Stream implements StreamInterface {
 
-  const MODE_WRITE_ONLY_RESET = "wb";
-  const MODE_READ_WRITE_RESET = "rb";
-  const MODE_WRITE_ONLY_FROM_END = "ab";
-  const MODE_READ_WRITE_FROM_END = "ab+";
-  const MODE_READ_ONLY_FROM_BEGIN = "rb";
-  const MODE_READ_WRITE_FROM_BEGIN = "rb+";
+  const MODE_READ_ONLY_FROM_BEGIN   = "r";
+  const MODE_READ_WRITE_RESET       = "r+";
+  const MODE_WRITE_ONLY_RESET       = "w";
+  const MODE_READ_WRITE_FROM_BEGIN  = "w+";
+  const MODE_WRITE_ONLY_FROM_END    = "a";
+  const MODE_READ_WRITE_FROM_END    = "a+";
+  const MODE_WRITE_ONLY_CREATE      = "x";
+  const MODE_READ_WRITE_ONLY_CREATE = "x+";
 
   /**
    * @var resource|string
@@ -187,13 +189,17 @@ class Stream implements StreamInterface {
   /**
    * @see Arango\Http\Contracts\Stream::write()
    */
-  public function write(string str) -> int {
+  public function write(string content) -> int {
     if(!is_resource(this->streamResource)) {
       throw new \RuntimeException("No resource available");
     }
 
-    var result;
-    let result = fwrite(this->streamResource, str);
+    var result = 0;
+
+    if(this->isWritable()) {
+      let result = fwrite(this->streamResource, content);
+    }
+
 
     if(result === false) {
       throw new \RuntimeException("Error writing to stream");
@@ -247,15 +253,14 @@ class Stream implements StreamInterface {
       throw new \RuntimeException("No resource available");
     }
 
-    if(!this->isReadable()) {
-      return "";
-    }
+    var result = "";
 
-    var result;
-    let result = stream_get_contents(this->streamResource);
+    if(this->isReadable()) {
+      let result = stream_get_contents(this->streamResource);
 
-    if(result === false) {
-      throw new \RuntimeException("Error reading from stream");
+      if(result === false) {
+        throw new \RuntimeException("Error reading from stream");
+      }
     }
 
     return result;
@@ -290,7 +295,7 @@ class Stream implements StreamInterface {
   public function attach(stream, mode = "r") {
     let this->stream = stream;
 
-    if(! (is_string(stream) || is_resource(stream))) {
+    if(!(is_string(stream) || is_resource(stream))) {
       throw new \InvalidArgumentException("Invalid resource");
     }
 
@@ -306,7 +311,7 @@ class Stream implements StreamInterface {
   }
 
   /**
-   * Returns the resource of stream
+   * Return stream resource
    *
    * @return resource|null
    */

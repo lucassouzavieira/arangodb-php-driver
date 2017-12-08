@@ -94,11 +94,11 @@ interface Stream {
   /**
    * Write data to the stream.
    *
-   * @param string str The string that is to be written
+   * @param string content The string that is to be written
    * @return int Return the number of bytes written to the stream
    * @throws \RuntimeException
    */
-  public function write(string str) -> int;
+  public function write(string content) -> int;
 
   /**
    * Returns whether or not the stream is readable.
