@@ -11,7 +11,7 @@ namespace Arango\Http\Contracts;
  */
 interface Uri {
 
-  /*
+  /**
    * Return the string representation as a URI reference.
    *
    * @see http://tools.ietf.org/html/rfc3986#section-4.1
@@ -68,21 +68,21 @@ interface Uri {
   public function getPath() -> string;
 
   /**
-  * Retrieve the query string of the URI.
-  *
-  * @see https://tools.ietf.org/html/rfc3986#section-2
-  * @see https://tools.ietf.org/html/rfc3986#section-3.4
-  * @return string The URI query string
-  */
+   * Retrieve the query string of the URI.
+   *
+   * @see https://tools.ietf.org/html/rfc3986#section-2
+   * @see https://tools.ietf.org/html/rfc3986#section-3.4
+   * @return string The URI query string
+   */
   public function getQuery() -> string;
 
   /**
-  * Retrieve the fragment component of the URI.
-  *
-  * @see https://tools.ietf.org/html/rfc3986#section-2
-  * @see https://tools.ietf.org/html/rfc3986#section-3.5
-  * @return string The URI fragment
-  */
+   * Retrieve the fragment component of the URI.
+   *
+   * @see https://tools.ietf.org/html/rfc3986#section-2
+   * @see https://tools.ietf.org/html/rfc3986#section-3.5
+   * @return string The URI fragment
+   */
   public function getFragment() -> string;
 
   /**

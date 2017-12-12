@@ -1,6 +1,7 @@
 
 namespace Arango\Http\Base;
 
+use Arango\Http\Base\Stream;
 use Arango\Http\Base\Message;
 use Arango\Http\Contracts\Uri as UriInterface;
 use Arango\Http\Contracts\Stream as StreamInterface;
