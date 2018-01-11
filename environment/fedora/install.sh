@@ -10,7 +10,7 @@ sudo yum install -y php-devel gcc make re2c autoconf
 
 # Gets the source code from Github and installs
 echo "Installing Zephir parser"
-git clone git://github.com/phalcon/php-zephir-parser.git
+git clone https://github.com/phalcon/php-zephir-parser.git
 cd php-zephir-parser
 sudo ./install
 

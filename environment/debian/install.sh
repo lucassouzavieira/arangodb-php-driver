@@ -10,7 +10,7 @@ sudo apt-get install -y php7.0-dev gcc make re2c autoconf libpcre3-dev
 
 # Gets the source code from Github and installs
 echo "Installing Zephir parser"
-git clone git://github.com/phalcon/php-zephir-parser.git
+git clone https://github.com/phalcon/php-zephir-parser.git
 cd php-zephir-parser
 sudo ./install
 
