@@ -6,7 +6,7 @@ echo "This script will install Zephir language tools in your $(uname -r) environ
 cd ~
 
 # Install environment requirements
-sudo apt-get install -y php7.0-dev gcc make re2c autoconf libpcre3-dev
+sudo apt-get install -y php7.1-dev gcc make re2c autoconf libpcre3-dev
 
 # Gets the source code from Github and installs
 echo "Installing Zephir parser"
@@ -15,9 +15,8 @@ cd php-zephir-parser
 sudo ./install
 
 # Add Zephir parser extension in php.ini file
-
-echo "[Zephir extension]" | sudo tee -a /etc/php/7.0/apache2/php.ini > /dev/null
-echo "extension=zephir_parser.so" | sudo tee -a /etc/php/7.0/apache2/php.ini > /dev/null
+echo "[Zephir extension]" | sudo tee -a /etc/php/7.1/cli/php.ini > /dev/null
+echo "extension=zephir_parser.so" | sudo tee -a /etc/php/7.1/cli/php.ini > /dev/null
 
 # Restart web server
 sudo systemctl restart apache2
