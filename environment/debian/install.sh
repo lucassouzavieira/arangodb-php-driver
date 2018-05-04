@@ -33,4 +33,9 @@ sudo ./install -c
 # User root
 cd ~
 
+# Remove source dirs
+
+rm -r php-zephir-parser
+rm -r zephir
+
 echo "Installation complete ! Try 'zephir' in your terminal"
